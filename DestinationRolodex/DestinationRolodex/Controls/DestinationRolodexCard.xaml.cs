@@ -30,7 +30,7 @@ public sealed partial class DestinationRolodexCard : UserControl
     private readonly CountryPickerController _picker = new();
     private readonly CameraController _camera = new();
     private readonly TransitionCoordinator _coordinator = new();
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(16) };
+    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(8) };
     private readonly Stopwatch _clock = Stopwatch.StartNew();
     private readonly Tween _detailOpacity = new(1);
     private readonly Tween _detailY = new(0);
@@ -199,6 +199,12 @@ public sealed partial class DestinationRolodexCard : UserControl
         _regionInk ??= (Brush)Application.Current.Resources["RolodexRegionBrushFixed"];
         GlyphLayout.Apply(Eyebrow, "DESTINATIONS", _fontSemiBold, 10, 2.2, _sceneInk);
         UpdateMotionBadge();
+#if DEBUG
+        if (App.HarnessOptions.NoShader)
+        {
+            AllowRuntimeEffect = false;
+        }
+#endif
         EnsureSurface();
         _cache ??= new DestinationMediaCache();
         ApplyHarnessHooks();

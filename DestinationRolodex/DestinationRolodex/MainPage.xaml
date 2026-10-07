@@ -99,7 +99,7 @@
     </Style>
   </Page.Resources>
 
-  <Grid x:Name="PageRoot">
+  <Grid x:Name="PageRoot" Background="{StaticResource RolodexPageBrushFixed}">
     <ScrollViewer x:Name="PageScroll" HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled">
       <Grid utu:SafeArea.Insets="VisibleBounds">
         <Grid.RowDefinitions>
@@ -121,7 +121,7 @@
         </Grid>
 
         <!-- Main: card column + motion lab -->
-        <Grid x:Name="LabLayout" Grid.Row="1" MaxWidth="838" Margin="{utu:Responsive Narrow='17,24,17,19', Wide='24,30,24,24', Layout={StaticResource DemoLayout}}" ColumnSpacing="{utu:Responsive Narrow=0, Wide=54, Layout={StaticResource DemoLayout}}" RowSpacing="{utu:Responsive Narrow=31, Wide=0, Layout={StaticResource DemoLayout}}" HorizontalAlignment="Center">
+        <Grid x:Name="LabLayout" Grid.Row="1" MaxWidth="838" Margin="{utu:Responsive Narrow='17,24,17,19', Wide='24,30,24,24', Layout={StaticResource DemoLayout}}" ColumnSpacing="{utu:Responsive Narrow=0, Wide=54, Layout={StaticResource DemoLayout}}" RowSpacing="{utu:Responsive Narrow=31, Wide=0, Layout={StaticResource DemoLayout}}" HorizontalAlignment="Stretch">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
@@ -225,14 +225,14 @@
                   <TextBlock Text="Duration" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrush}" />
                   <TextBlock Text="{x:Bind ViewModel.DurationText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoSettingValueBrush}" HorizontalAlignment="Right" />
                 </Grid>
-                <Slider x:Name="DurationSlider" Style="{StaticResource DemoSlider}" Minimum="500" Maximum="2400" StepFrequency="50" Value="{x:Bind ViewModel.DurationMs, Mode=TwoWay}" ValueChanged="OnTuningChanged" AutomationProperties.Name="Transition duration in milliseconds" />
+                <Slider x:Name="DurationSlider" Style="{StaticResource DemoSlider}" Minimum="500" Maximum="2400" StepFrequency="50" Value="{x:Bind ViewModel.DurationMs, Mode=TwoWay}" AutomationProperties.Name="Transition duration in milliseconds" />
               </StackPanel>
               <StackPanel Grid.Column="1">
                 <Grid Margin="0,0,0,8">
                   <TextBlock Text="Intensity" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrush}" />
                   <TextBlock Text="{x:Bind ViewModel.StrengthText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoSettingValueBrush}" HorizontalAlignment="Right" />
                 </Grid>
-                <Slider x:Name="StrengthSlider" Style="{StaticResource DemoSlider}" Minimum="0" Maximum="100" StepFrequency="1" Value="{x:Bind ViewModel.StrengthPercent, Mode=TwoWay}" ValueChanged="OnTuningChanged" AutomationProperties.Name="Transition intensity" />
+                <Slider x:Name="StrengthSlider" Style="{StaticResource DemoSlider}" Minimum="0" Maximum="100" StepFrequency="1" Value="{x:Bind ViewModel.StrengthPercent, Mode=TwoWay}" AutomationProperties.Name="Transition intensity" />
               </StackPanel>
             </Grid>
 
@@ -241,7 +241,7 @@
                 <TextBlock Text="Scrub the transition" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrush}" />
                 <TextBlock Text="{x:Bind ViewModel.TimelineText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoSettingValueBrush}" HorizontalAlignment="Right" />
               </Grid>
-              <Slider x:Name="TimelineSlider" Style="{StaticResource DemoSlider}" Minimum="0" Maximum="1000" StepFrequency="1" Value="{x:Bind ViewModel.Timeline, Mode=OneWay}" ValueChanged="OnTimelineChanged" AutomationProperties.Name="Transition progress" />
+              <Slider x:Name="TimelineSlider" Style="{StaticResource DemoSlider}" Minimum="0" Maximum="1000" StepFrequency="1" Value="{x:Bind ViewModel.Timeline, Mode=OneWay}" AutomationProperties.Name="Transition progress" />
               <Grid Margin="0,9,0,0">
                 <TextBlock Text="{x:Bind ViewModel.RouteFrom, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="#FF849079" HorizontalAlignment="Left" />
                 <Viewbox Width="18" Height="13" HorizontalAlignment="Center"><Path Data="M4 12h16m-5-5 5 5-5 5" Stroke="#FFA5B29A" StrokeThickness="1.25" Width="24" Height="24" /></Viewbox>

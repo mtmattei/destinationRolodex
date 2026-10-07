@@ -56,6 +56,20 @@ public partial class App : Application
 
         MainWindow.SetWindowIcon();
         MainWindow.Activate();
+#if DEBUG
+        if (HarnessOptions.Viewport is { } vp)
+        {
+            // Resize twice: the Skia surface can lag the frame on the first resize (runtime gotcha).
+            // AppWindow.Resize is the outer size; add the Win32 frame so the client area approximates the viewport.
+            var size = new Windows.Graphics.SizeInt32 { Width = vp.Width + 16, Height = vp.Height + 39 };
+            MainWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = size.Width + 8, Height = size.Height + 8 });
+            var timer = MainWindow.DispatcherQueue.CreateTimer();
+            timer.Interval = TimeSpan.FromMilliseconds(600);
+            timer.IsRepeating = false;
+            timer.Tick += (_, _) => MainWindow.AppWindow.Resize(size);
+            timer.Start();
+        }
+#endif
     }
 
 #if DEBUG

@@ -1,0 +1,1 @@
+{ "steps": 1000, "elapsedMs": 4660, "selectedIndex": 4, "cacheCount": 6, "cacheBytes": 31801760, "retired": 0, "managedBytes": 30119128, "workingSetBytes": 456024064, "loopFrames": 194, "loopP50Ms": 15.86, "loopP95Ms": 52.42, "loopMaxMs": 98.43, "renderP50Ms": 0.038, "renderP95Ms": 0.067, "renderMaxMs": 6.358 }

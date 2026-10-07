@@ -156,7 +156,7 @@
     <Setter Property="Data" Value="M3 10a9 9 0 1 1 2 8M3 4v6h6" />
   </Style>
   <Style x:Key="RolodexIconMinus" TargetType="Path" BasedOn="{StaticResource RolodexIconBase}">
-    <Setter Property="Data" Value="M6 12h12" />
+    <Setter Property="Data" Value="M6 12h12M12 11.995v.01" />
   </Style>
   <Style x:Key="RolodexIconPlus" TargetType="Path" BasedOn="{StaticResource RolodexIconBase}">
     <Setter Property="Data" Value="M6 12h12M12 6v12" />

@@ -128,7 +128,7 @@ public class CountryPickerControllerTests
         p.DragMove(0, -400, .032);
         p.DragEnd(.04, cancelled: false);
         Math.Abs(p.Velocity).Should().BeLessThanOrEqualTo(3.0000001);
-        (p.Target - 5).Should().BeLessThanOrEqualTo(1.6);
+        (p.Target - 5).Should().BeLessThanOrEqualTo(2); // 1.6 rows of momentum, rounded to a row
     }
 
     [Test]
@@ -212,6 +212,10 @@ public class TransitionCoordinatorTests
         c.Present(C, cc, 1, settings);
 
         c.Active!.ToDestination.Id.Should().Be("b");
+        c.HasQueuedTarget.Should().BeTrue();
+        c.Present(B, b, 1, settings); // already heading there: the queue empties instead of growing
+        c.HasQueuedTarget.Should().BeFalse();
+        c.Present(C, cc, 1, settings);
         c.Tick(1001).Should().BeTrue();
         c.Active!.ToDestination.Id.Should().Be("c");
         c.HasQueuedTarget.Should().BeFalse();

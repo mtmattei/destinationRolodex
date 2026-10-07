@@ -46,23 +46,16 @@ public sealed class TransitionCoordinator
     /// <summary>Requests the configured effect from the displayed photo to <paramref name="photo"/>, or queues it behind a running one.</summary>
     public void Present(Destination destination, DecodedPhoto photo, int direction, TransitionSettings settings)
     {
-        if (DisplayedPhoto is null || DisplayedDestination is null || ReferenceEquals(DisplayedPhoto, photo))
+        if (Active is { IsPreview: false } running)
         {
-            ShowImmediately(destination, photo);
+            // Bounded latest-target: the running effect finishes; only the newest request plays after it.
+            _queued = ReferenceEquals(running.ToPhoto, photo) ? null : new Pending(destination, photo, direction, settings);
             return;
         }
 
-        if (Active is not null)
+        if (Active is { IsPreview: true })
         {
-            if (Active.IsPreview)
-            {
-                CancelPreview();
-            }
-            else
-            {
-                _queued = new Pending(destination, photo, direction, settings);
-                return;
-            }
+            CancelPreview();
         }
 
         if (DisplayedPhoto is null || DisplayedDestination is null || ReferenceEquals(DisplayedPhoto, photo))

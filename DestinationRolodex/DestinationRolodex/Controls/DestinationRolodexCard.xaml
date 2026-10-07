@@ -96,12 +96,12 @@
               </TextBlock>
             </StackPanel>
 
-            <HyperlinkButton x:Name="CreditLink" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="26,0,0,78" Padding="0" MinHeight="44" Visibility="Collapsed" Foreground="{StaticResource RolodexCreditBrushFixed}" Background="Transparent" AutomationProperties.Name="Photo source">
+            <Button x:Name="CreditLink" Style="{StaticResource RolodexBareButton}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="26,0,0,78" MinHeight="44" Visibility="Collapsed" AutomationProperties.Name="Photo source">
               <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
                 <Viewbox Width="16" Height="16"><Path Style="{StaticResource RolodexIconExpand}" Stroke="{StaticResource RolodexCreditBrushFixed}" /></Viewbox>
                 <TextBlock x:Name="CreditText" FontFamily="{StaticResource RolodexFontRegular}" FontSize="{StaticResource RolodexCreditFontSize}" Foreground="{StaticResource RolodexCreditBrushFixed}" VerticalAlignment="Center" />
               </StackPanel>
-            </HyperlinkButton>
+            </Button>
 
             <!-- Scene footer -->
             <Grid x:Name="SceneFooter" VerticalAlignment="Bottom" Margin="24,0,21,21" ColumnSpacing="8">

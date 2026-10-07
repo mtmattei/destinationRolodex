@@ -1,0 +1,219 @@
+{
+  "source": "prototype/approved.html in headless Chromium (ANGLE/SwiftShader)",
+  "pairs": [
+    {
+      "file": "morph-ph-jp-000.png",
+      "mode": "morph",
+      "pair": "ph-jp",
+      "progress": 0,
+      "meanAbsDiffVsUno": 3.12
+    },
+    {
+      "file": "morph-ph-jp-025.png",
+      "mode": "morph",
+      "pair": "ph-jp",
+      "progress": 0.25,
+      "meanAbsDiffVsUno": 3.22
+    },
+    {
+      "file": "morph-ph-jp-050.png",
+      "mode": "morph",
+      "pair": "ph-jp",
+      "progress": 0.5,
+      "meanAbsDiffVsUno": 2.89
+    },
+    {
+      "file": "morph-ph-jp-075.png",
+      "mode": "morph",
+      "pair": "ph-jp",
+      "progress": 0.75,
+      "meanAbsDiffVsUno": 1.27
+    },
+    {
+      "file": "morph-ph-jp-100.png",
+      "mode": "morph",
+      "pair": "ph-jp",
+      "progress": 1,
+      "meanAbsDiffVsUno": 0.54
+    },
+    {
+      "file": "liquid-ph-jp-000.png",
+      "mode": "liquid",
+      "pair": "ph-jp",
+      "progress": 0,
+      "meanAbsDiffVsUno": 3.12
+    },
+    {
+      "file": "liquid-ph-jp-025.png",
+      "mode": "liquid",
+      "pair": "ph-jp",
+      "progress": 0.25,
+      "meanAbsDiffVsUno": 2.97
+    },
+    {
+      "file": "liquid-ph-jp-050.png",
+      "mode": "liquid",
+      "pair": "ph-jp",
+      "progress": 0.5,
+      "meanAbsDiffVsUno": 0.58
+    },
+    {
+      "file": "liquid-ph-jp-075.png",
+      "mode": "liquid",
+      "pair": "ph-jp",
+      "progress": 0.75,
+      "meanAbsDiffVsUno": 0.54
+    },
+    {
+      "file": "liquid-ph-jp-100.png",
+      "mode": "liquid",
+      "pair": "ph-jp",
+      "progress": 1,
+      "meanAbsDiffVsUno": 0.54
+    },
+    {
+      "file": "morph-jp-ph-000.png",
+      "mode": "morph",
+      "pair": "jp-ph",
+      "progress": 0,
+      "meanAbsDiffVsUno": 0.54
+    },
+    {
+      "file": "morph-jp-ph-025.png",
+      "mode": "morph",
+      "pair": "jp-ph",
+      "progress": 0.25,
+      "meanAbsDiffVsUno": 1.5
+    },
+    {
+      "file": "morph-jp-ph-050.png",
+      "mode": "morph",
+      "pair": "jp-ph",
+      "progress": 0.5,
+      "meanAbsDiffVsUno": 3.4
+    },
+    {
+      "file": "morph-jp-ph-075.png",
+      "mode": "morph",
+      "pair": "jp-ph",
+      "progress": 0.75,
+      "meanAbsDiffVsUno": 3.4
+    },
+    {
+      "file": "morph-jp-ph-100.png",
+      "mode": "morph",
+      "pair": "jp-ph",
+      "progress": 1,
+      "meanAbsDiffVsUno": 3.12
+    },
+    {
+      "file": "liquid-jp-ph-000.png",
+      "mode": "liquid",
+      "pair": "jp-ph",
+      "progress": 0,
+      "meanAbsDiffVsUno": 0.54
+    },
+    {
+      "file": "liquid-jp-ph-025.png",
+      "mode": "liquid",
+      "pair": "jp-ph",
+      "progress": 0.25,
+      "meanAbsDiffVsUno": 1.22
+    },
+    {
+      "file": "liquid-jp-ph-050.png",
+      "mode": "liquid",
+      "pair": "jp-ph",
+      "progress": 0.5,
+      "meanAbsDiffVsUno": 2.82
+    },
+    {
+      "file": "liquid-jp-ph-075.png",
+      "mode": "liquid",
+      "pair": "jp-ph",
+      "progress": 0.75,
+      "meanAbsDiffVsUno": 3.12
+    },
+    {
+      "file": "liquid-jp-ph-100.png",
+      "mode": "liquid",
+      "pair": "jp-ph",
+      "progress": 1,
+      "meanAbsDiffVsUno": 3.12
+    },
+    {
+      "file": "morph-jp-it-000.png",
+      "mode": "morph",
+      "pair": "jp-it",
+      "progress": 0,
+      "meanAbsDiffVsUno": 0.54
+    },
+    {
+      "file": "morph-jp-it-025.png",
+      "mode": "morph",
+      "pair": "jp-it",
+      "progress": 0.25,
+      "meanAbsDiffVsUno": 1.13
+    },
+    {
+      "file": "morph-jp-it-050.png",
+      "mode": "morph",
+      "pair": "jp-it",
+      "progress": 0.5,
+      "meanAbsDiffVsUno": 2.28
+    },
+    {
+      "file": "morph-jp-it-075.png",
+      "mode": "morph",
+      "pair": "jp-it",
+      "progress": 0.75,
+      "meanAbsDiffVsUno": 2.05
+    },
+    {
+      "file": "morph-jp-it-100.png",
+      "mode": "morph",
+      "pair": "jp-it",
+      "progress": 1,
+      "meanAbsDiffVsUno": 1.87
+    },
+    {
+      "file": "liquid-jp-it-000.png",
+      "mode": "liquid",
+      "pair": "jp-it",
+      "progress": 0,
+      "meanAbsDiffVsUno": 0.54
+    },
+    {
+      "file": "liquid-jp-it-025.png",
+      "mode": "liquid",
+      "pair": "jp-it",
+      "progress": 0.25,
+      "meanAbsDiffVsUno": 0.87
+    },
+    {
+      "file": "liquid-jp-it-050.png",
+      "mode": "liquid",
+      "pair": "jp-it",
+      "progress": 0.5,
+      "meanAbsDiffVsUno": 1.85
+    },
+    {
+      "file": "liquid-jp-it-075.png",
+      "mode": "liquid",
+      "pair": "jp-it",
+      "progress": 0.75,
+      "meanAbsDiffVsUno": 1.87
+    },
+    {
+      "file": "liquid-jp-it-100.png",
+      "mode": "liquid",
+      "pair": "jp-it",
+      "progress": 1,
+      "meanAbsDiffVsUno": 1.87
+    }
+  ],
+  "webgl": {
+    "available": true,
+    "error": null
+  }
+}

@@ -28,7 +28,7 @@ run desktop-noshader       --viewport=1440x1040 --no-shader --mode=liquid --seek
 run desktop-empty          --viewport=1440x1040 --empty --settle=1500
 run desktop-single         --viewport=1440x1040 --single --settle=1500
 run desktop-second         --viewport=1440x1040 --second --settle=2500
-run mobile-second          --viewport=390x1400  --second --settle=2500
+run mobile-second          --viewport=390x1000  --second --settle=2500
 run desktop-steps          --viewport=1440x1040 --steps=1000 --settle=4000
 run desktop-autoplay-mid   --viewport=1440x1040 --autoplay --settle=6000
 taskkill //F //IM DestinationRolodex.exe >/dev/null 2>&1

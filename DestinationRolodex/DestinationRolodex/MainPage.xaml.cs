@@ -14,7 +14,7 @@ namespace DestinationRolodex;
 public sealed partial class MainPage : Page
 {
     private readonly DispatcherTimer _tuningDebounce = new() { Interval = TimeSpan.FromMilliseconds(320) };
-    private bool _syncingTimeline;
+    private bool _timelineUserActive;
 
     public DestinationDemoViewModel ViewModel { get; } = new();
 
@@ -26,7 +26,7 @@ public sealed partial class MainPage : Page
         _tuningDebounce.Tick += (_, _) => { _tuningDebounce.Stop(); ViewModel.Replay(); };
 
         Card.TransitionStarted += (_, e) => ViewModel.ReportTransitionStart(e.From.Country, e.To.Country);
-        Card.TransitionProgress += (_, e) => { _syncingTimeline = true; ViewModel.ReportProgress(e.Progress); _syncingTimeline = false; };
+        Card.TransitionProgress += (_, e) => ViewModel.ReportProgress(e.Progress);
         Card.TransitionCompleted += (_, _) => ViewModel.ReportRendererReady(Card.RendererStatus, Card.RendererDetail);
         Card.RendererFallback += (_, message) => ViewModel.ReportFallback(message);
         Card.MediaFailed += (_, message) => ViewModel.ReportFallback($"Photo failed: {message}");
@@ -40,6 +40,20 @@ public sealed partial class MainPage : Page
 
         Loaded += OnLoaded;
         KeyDown += OnPageKeyDown;
+
+        // Sliders react to the user only: programmatic updates (progress reporting, initial binding) never replay or seek.
+        foreach (var slider in new[] { DurationSlider, StrengthSlider })
+        {
+            slider.AddHandler(PointerReleasedEvent, new PointerEventHandler((_, _) => _tuningDebounce.Start()), true);
+            slider.AddHandler(PointerCaptureLostEvent, new PointerEventHandler((_, _) => _tuningDebounce.Start()), true);
+            slider.AddHandler(KeyUpEvent, new KeyEventHandler((_, _) => _tuningDebounce.Start()), true);
+        }
+
+        TimelineSlider.AddHandler(PointerPressedEvent, new PointerEventHandler((_, _) => _timelineUserActive = true), true);
+        TimelineSlider.AddHandler(PointerReleasedEvent, new PointerEventHandler((_, _) => _timelineUserActive = false), true);
+        TimelineSlider.AddHandler(PointerCaptureLostEvent, new PointerEventHandler((_, _) => _timelineUserActive = false), true);
+        TimelineSlider.AddHandler(KeyUpEvent, new KeyEventHandler((_, _) => ViewModel.Seek(TimelineSlider.Value / 1000d)), true);
+        TimelineSlider.ValueChanged += (_, e) => { if (_timelineUserActive) ViewModel.Seek(e.NewValue / 1000d); };
     }
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -54,7 +68,6 @@ public sealed partial class MainPage : Page
         if (h.Empty) catalog = Array.Empty<Destination>();
         else if (h.Single) catalog = catalog.Take(1).ToList();
         if (h.Viewport is { } vp) { PageRoot.Width = vp.Width; PageRoot.Height = vp.Height; PageRoot.HorizontalAlignment = HorizontalAlignment.Left; PageRoot.VerticalAlignment = VerticalAlignment.Top; }
-        if (h.NoShader) { Card.AllowRuntimeEffect = false; SecondCard.AllowRuntimeEffect = false; }
         if (h.ReducedMotion) ViewModel.IsReducedMotion = true;
         if (h.Mode == "liquid") ViewModel.Choose(PhotoTransitionKind.LiquidWarp, replay: false);
         if (h.SecondCard) ViewModel.ShowSecondCard = true;
@@ -95,27 +108,6 @@ public sealed partial class MainPage : Page
     private void OnLiquidChecked(object sender, RoutedEventArgs e)
     {
         if (ViewModel.TransitionKind != PhotoTransitionKind.LiquidWarp) ViewModel.Choose(PhotoTransitionKind.LiquidWarp);
-    }
-
-    private void OnTuningChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (!IsLoaded || Math.Abs(e.NewValue - e.OldValue) < double.Epsilon)
-        {
-            return;
-        }
-
-        _tuningDebounce.Stop();
-        _tuningDebounce.Start();
-    }
-
-    private void OnTimelineChanged(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (!IsLoaded || _syncingTimeline || Math.Abs(e.NewValue - ViewModel.Timeline) < .5)
-        {
-            return;
-        }
-
-        ViewModel.Seek(e.NewValue / 1000d);
     }
 
     private void OnPageKeyDown(object sender, KeyRoutedEventArgs e)
