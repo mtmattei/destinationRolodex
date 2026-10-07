@@ -8,11 +8,10 @@ OUT="$ROOT/docs/evidence/captures"
 mkdir -p "$OUT"
 run() {
   local name="$1"; shift
-  taskkill //F //IM DestinationRolodex.exe >/dev/null 2>&1
   local start=$(date +%s)
+  # Harness runs exit on their own (Environment.Exit); never kill other instances (a recording may be running).
   timeout 75 "$EXE" --capture="$OUT/$name.png" "$@" >"$OUT/$name.log" 2>&1
   local code=$?
-  taskkill //F //IM DestinationRolodex.exe >/dev/null 2>&1
   printf '%-28s exit=%s %ss\n' "$name" "$code" "$(( $(date +%s) - start ))"
 }
 run desktop-rest           --viewport=1440x1040 --settle=2500
@@ -31,7 +30,5 @@ run desktop-second         --viewport=1440x1040 --second --settle=2500
 run mobile-second          --viewport=390x1000  --second --settle=2500
 run desktop-steps          --viewport=1440x1040 --steps=1000 --settle=4000
 run desktop-autoplay-mid   --viewport=1440x1040 --autoplay --settle=6000
-taskkill //F //IM DestinationRolodex.exe >/dev/null 2>&1
 timeout 60 "$EXE" --perf="$OUT/perf.json" --viewport=1440x1040 >"$OUT/perf.log" 2>&1; echo "perf exit=$?"
-taskkill //F //IM DestinationRolodex.exe >/dev/null 2>&1
 ls -la "$OUT"/*.png "$OUT"/*.json 2>/dev/null

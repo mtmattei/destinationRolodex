@@ -34,7 +34,7 @@ public sealed partial class MainPage : Page
         {
             if (e.PropertyName == nameof(DestinationDemoViewModel.IsFallback))
             {
-                StatusDot.Fill = (Brush)Resources[ViewModel.IsFallback ? "DemoStatusFallbackBrush" : "DemoStatusDotBrush"];
+                StatusDot.Fill = (Brush)Resources[ViewModel.IsFallback ? "DemoStatusFallbackBrushFixed" : "DemoStatusDotBrushFixed"];
             }
         };
 
@@ -59,8 +59,8 @@ public sealed partial class MainPage : Page
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         var semi = (FontFamily)Application.Current.Resources["RolodexFontSemiBold"];
-        GlyphLayout.Apply(SpecLabel, "LIVE TRANSITIONS", semi, 9, 1.6, (Brush)Resources["DemoSpecBrush"]);
-        GlyphLayout.Apply(LabKicker, "APPROVED MOTION", semi, 8, 1.8, (Brush)Resources["DemoKickerBrush"]);
+        GlyphLayout.Apply(SpecLabel, "LIVE TRANSITIONS", semi, 9, 1.6, (Brush)Resources["DemoSpecBrushFixed"]);
+        GlyphLayout.Apply(LabKicker, "APPROVED MOTION", semi, 8, 1.8, (Brush)Resources["DemoKickerBrushFixed"]);
 
         var catalog = await DestinationRepository.LoadPackagedAsync();
 #if DEBUG
@@ -133,15 +133,15 @@ public sealed partial class MainPage : Page
         list.Children.Add(new TextBlock
         {
             Text = "Each country has its own packaged photograph (the six originals from the handoff manifest). Credits and source pages are preserved per photo.",
-            FontFamily = regular, FontSize = 12, LineHeight = 20, TextWrapping = TextWrapping.Wrap, Foreground = (Brush)Resources["DemoDialogBodyBrush"],
+            FontFamily = regular, FontSize = 12, LineHeight = 20, TextWrapping = TextWrapping.Wrap, Foreground = (Brush)Resources["DemoDialogBodyBrushFixed"],
         });
         foreach (var d in ViewModel.Destinations)
         {
-            var row = new Grid { Padding = new Thickness(0, 13, 0, 13), BorderThickness = new Thickness(0, 1, 0, 0), BorderBrush = (Brush)Resources["DemoDialogLineBrush"] };
+            var row = new Grid { Padding = new Thickness(0, 13, 0, 13), BorderThickness = new Thickness(0, 1, 0, 0), BorderBrush = (Brush)Resources["DemoDialogLineBrushFixed"] };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            row.Children.Add(new TextBlock { Text = d.Country, FontFamily = regular, FontSize = 12, Foreground = (Brush)Resources["DemoDialogInkBrush"], VerticalAlignment = VerticalAlignment.Center });
-            var link = new HyperlinkButton { Content = new TextBlock { Text = $"{d.PhotoCredit} ↗", FontFamily = regular, FontSize = 11, Foreground = (Brush)Resources["DemoDialogLinkBrush"] }, NavigateUri = d.PhotoSource, Padding = new Thickness(0), MinHeight = 32 };
+            row.Children.Add(new TextBlock { Text = d.Country, FontFamily = regular, FontSize = 12, Foreground = (Brush)Resources["DemoDialogInkBrushFixed"], VerticalAlignment = VerticalAlignment.Center });
+            var link = new HyperlinkButton { Content = new TextBlock { Text = $"{d.PhotoCredit} ↗", FontFamily = regular, FontSize = 11, Foreground = (Brush)Resources["DemoDialogLinkBrushFixed"] }, NavigateUri = d.PhotoSource, Padding = new Thickness(0), MinHeight = 32 };
             Grid.SetColumn(link, 1);
             row.Children.Add(link);
             list.Children.Add(row);
@@ -150,7 +150,7 @@ public sealed partial class MainPage : Page
         list.Children.Add(new TextBlock
         {
             Text = "Look around adds a constrained pan, zoom and perspective to a flat photograph; it is not a 360° panorama. The morph is procedural texture displacement, not landmark tracking. Photo effects need a Skia surface with runtime SkSL; otherwise plain photos with a crossfade are shown and labelled as such.",
-            Margin = new Thickness(0, 15, 0, 0), FontFamily = regular, FontSize = 11, LineHeight = 18, TextWrapping = TextWrapping.Wrap, Foreground = (Brush)Resources["DemoDialogBodyBrush"],
+            Margin = new Thickness(0, 15, 0, 0), FontFamily = regular, FontSize = 11, LineHeight = 18, TextWrapping = TextWrapping.Wrap, Foreground = (Brush)Resources["DemoDialogBodyBrushFixed"],
         });
         var dialog = new ContentDialog
         {
@@ -209,11 +209,13 @@ public sealed partial class MainPage : Page
             await File.WriteAllTextAsync(perf, json);
         }
 
+#if !__WASM__
         if (h.CapturePath is { } path)
         {
             await Task.Delay(h.SettleMs);
             await Harness.CaptureHelper.CaptureAsync(PageRoot, path);
         }
+#endif
 
         Environment.Exit(0);
     }

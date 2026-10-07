@@ -174,6 +174,33 @@
     <Setter Property="Data" Value="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" />
   </Style>
 
+  <!-- Demo-page glyphs from the prototype's lab panel (index.html inline SVGs, 40-unit boxes) -->
+  <SolidColorBrush x:Key="RolodexLabGlyphBrushFixed" Color="#FF8B9A7E" />
+  <SolidColorBrush x:Key="RolodexLabArrowBrushFixed" Color="#FFA5B29A" />
+  <Style x:Key="RolodexIconLabMorph" TargetType="Path" BasedOn="{StaticResource RolodexIconBase}">
+    <Setter Property="Data" Value="M8 12c7-8 14 8 24 0M8 20c7-8 14 8 24 0M8 28c7-8 14 8 24 0" />
+    <Setter Property="Stroke" Value="{StaticResource RolodexLabGlyphBrushFixed}" />
+    <Setter Property="StrokeThickness" Value="0.95" />
+    <Setter Property="Width" Value="40" />
+    <Setter Property="Height" Value="40" />
+  </Style>
+  <Style x:Key="RolodexIconLabLiquid" TargetType="Path" BasedOn="{StaticResource RolodexIconBase}">
+    <Setter Property="Data" Value="M8 20a12 10 0 1 0 24 0a12 10 0 1 0 -24 0 M13 20a7 6 0 1 0 14 0a7 6 0 1 0 -14 0 M18 20a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+    <Setter Property="Stroke" Value="{StaticResource RolodexLabGlyphBrushFixed}" />
+    <Setter Property="StrokeThickness" Value="0.95" />
+    <Setter Property="Width" Value="40" />
+    <Setter Property="Height" Value="40" />
+  </Style>
+  <Style x:Key="RolodexIconArrowRight" TargetType="Path" BasedOn="{StaticResource RolodexIconBase}">
+    <Setter Property="Data" Value="M4 12h16m-5-5 5 5-5 5" />
+    <Setter Property="Stroke" Value="{StaticResource RolodexLabArrowBrushFixed}" />
+    <Setter Property="StrokeThickness" Value="1.25" />
+  </Style>
+  <Style x:Key="RolodexIconReplay" TargetType="Path" BasedOn="{StaticResource RolodexIconBase}">
+    <Setter Property="Data" Value="M4 9a8 8 0 1 1 1 9M4 3v6h6" />
+    <Setter Property="StrokeThickness" Value="1.25" />
+  </Style>
+
   <!-- Transparent chrome-less button base for scene controls (visual drawn by content, hit region ≥ 44). -->
   <Style x:Key="RolodexBareButton" TargetType="Button">
     <Setter Property="Background" Value="Transparent" />

@@ -1,4 +1,4 @@
-#if DEBUG
+#if DEBUG && !__WASM__
 using Microsoft.UI.Xaml.Media.Imaging;
 using SkiaSharp;
 

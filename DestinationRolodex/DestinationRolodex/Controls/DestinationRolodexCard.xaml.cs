@@ -70,6 +70,7 @@ public sealed partial class DestinationRolodexCard : UserControl
     private DateTime? _statusDue;
     private DateTime? _graceDue;
     private Destination? _pendingDestination;
+    private Size _lastViewport;
     private FontFamily? _fontSemiBold, _fontMedium, _fontRegular;
     private Brush? _sceneInk, _regionInk;
 
@@ -434,6 +435,7 @@ public sealed partial class DestinationRolodexCard : UserControl
 
         var cardWidth = Root.ActualWidth > 0 ? Root.ActualWidth : 480;
         var viewport = XamlRoot?.Size ?? new Size(1440, 1040);
+        _lastViewport = viewport;
         var narrowHost = viewport.Width <= 560;
         double sceneHeight;
         if (!double.IsNaN(SceneHeight) && SceneHeight > 0)
@@ -1316,6 +1318,12 @@ public sealed partial class DestinationRolodexCard : UserControl
             _timer.Stop();
             _lastTick = null;
             return;
+        }
+
+        if (XamlRoot is { } root && root.Size != _lastViewport)
+        {
+            // A window resize that reached XamlRoot.Size without a Changed/SizeChanged callback (seen during harness resizes).
+            UpdateLayoutMetrics();
         }
 
         var now = Now;

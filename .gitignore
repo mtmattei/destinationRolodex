@@ -4,3 +4,4 @@ obj/
 .vs/
 /destination-rolodex
 *.part
+bin-verify/

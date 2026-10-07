@@ -9,45 +9,45 @@
   <!-- xaml-lint: allow card - the motion-lab panels copy the prototype's demo chrome; CardContentControl adds interaction overlays the design does not have. -->
   <Page.Resources>
     <utu:ResponsiveLayout x:Key="DemoLayout" Narrowest="150" Narrow="300" Normal="600" Wide="721" Widest="1100" />
-    <SolidColorBrush x:Key="DemoHeaderLineBrush" Color="#FFE4E9DF" />
-    <SolidColorBrush x:Key="DemoMutedBrush" Color="#FF838C82" />
-    <SolidColorBrush x:Key="DemoSpecBrush" Color="#FF7D877C" />
-    <SolidColorBrush x:Key="DemoBrandIconBrush" Color="#FF496449" />
-    <SolidColorBrush x:Key="DemoKickerBrush" Color="#FF8B9685" />
-    <SolidColorBrush x:Key="DemoIntroBrush" Color="#FF899280" />
-    <SolidColorBrush x:Key="DemoOptionInkBrush" Color="#FF52624F" />
-    <SolidColorBrush x:Key="DemoOptionFillBrush" Color="#66ECF0E7" />
-    <SolidColorBrush x:Key="DemoOptionCheckedFillBrush" Color="#C9FFFFFF" />
-    <SolidColorBrush x:Key="DemoOptionCheckedBorderBrush" Color="#FFB5C5A6" />
-    <SolidColorBrush x:Key="DemoOptionCheckedInkBrush" Color="#FF2D462E" />
-    <SolidColorBrush x:Key="DemoOptionGlyphBrush" Color="#FF8B9A7E" />
-    <SolidColorBrush x:Key="DemoOptionGlyphCheckedBrush" Color="#FF698C4A" />
-    <SolidColorBrush x:Key="DemoOptionDescriptionBrush" Color="#FF8B9484" />
-    <SolidColorBrush x:Key="DemoRadioBorderBrush" Color="#FFC7D1BD" />
-    <SolidColorBrush x:Key="DemoRadioFillBrush" Color="#FF7D9B61" />
-    <SolidColorBrush x:Key="DemoSettingBrush" Color="#FF6A7963" />
-    <SolidColorBrush x:Key="DemoSettingValueBrush" Color="#FF939D8A" />
-    <SolidColorBrush x:Key="DemoDividerBrush" Color="#FFDFE6D7" />
-    <SolidColorBrush x:Key="DemoReplayFillBrush" Color="#FF3C5539" />
-    <SolidColorBrush x:Key="DemoReplayInkBrush" Color="#FFF3F6EC" />
-    <SolidColorBrush x:Key="DemoStatusDotBrush" Color="#FF93A57F" />
-    <SolidColorBrush x:Key="DemoStatusFallbackBrush" Color="#FFBC9867" />
-    <SolidColorBrush x:Key="DemoHelpBrush" Color="#FF9AA390" />
-    <SolidColorBrush x:Key="DemoUnderCardBrush" Color="#FF889087" />
-    <SolidColorBrush x:Key="DemoCreditInkBrush" Color="#FF7E897A" />
-    <SolidColorBrush x:Key="DemoCreditLineBrush" Color="#FFB4BDAE" />
-    <SolidColorBrush x:Key="DemoFooterBrush" Color="#FFA4AC9E" />
-    <SolidColorBrush x:Key="DemoSliderFillBrush" Color="#FF7D9766" />
-    <SolidColorBrush x:Key="DemoSliderTrackBrush" Color="#FFDFE5D8" />
-    <SolidColorBrush x:Key="DemoSliderThumbBrush" Color="#FF6D8B54" />
-    <SolidColorBrush x:Key="DemoDialogInkBrush" Color="#FF304235" />
-    <SolidColorBrush x:Key="DemoDialogBodyBrush" Color="#FF75816F" />
-    <SolidColorBrush x:Key="DemoDialogLineBrush" Color="#FFE3E9DD" />
-    <SolidColorBrush x:Key="DemoDialogLinkBrush" Color="#FF76826E" />
+    <SolidColorBrush x:Key="DemoHeaderLineBrushFixed" Color="#FFE4E9DF" />
+    <SolidColorBrush x:Key="DemoMutedBrushFixed" Color="#FF838C82" />
+    <SolidColorBrush x:Key="DemoSpecBrushFixed" Color="#FF7D877C" />
+    <SolidColorBrush x:Key="DemoBrandIconBrushFixed" Color="#FF496449" />
+    <SolidColorBrush x:Key="DemoKickerBrushFixed" Color="#FF8B9685" />
+    <SolidColorBrush x:Key="DemoIntroBrushFixed" Color="#FF899280" />
+    <SolidColorBrush x:Key="DemoOptionInkBrushFixed" Color="#FF52624F" />
+    <SolidColorBrush x:Key="DemoOptionFillBrushFixed" Color="#66ECF0E7" />
+    <SolidColorBrush x:Key="DemoOptionCheckedFillBrushFixed" Color="#C9FFFFFF" />
+    <SolidColorBrush x:Key="DemoOptionCheckedBorderBrushFixed" Color="#FFB5C5A6" />
+    <SolidColorBrush x:Key="DemoOptionCheckedInkBrushFixed" Color="#FF2D462E" />
+    <SolidColorBrush x:Key="DemoOptionGlyphBrushFixed" Color="#FF8B9A7E" />
+    <SolidColorBrush x:Key="DemoOptionGlyphCheckedBrushFixed" Color="#FF698C4A" />
+    <SolidColorBrush x:Key="DemoOptionDescriptionBrushFixed" Color="#FF8B9484" />
+    <SolidColorBrush x:Key="DemoRadioBorderBrushFixed" Color="#FFC7D1BD" />
+    <SolidColorBrush x:Key="DemoRadioFillBrushFixed" Color="#FF7D9B61" />
+    <SolidColorBrush x:Key="DemoSettingBrushFixed" Color="#FF6A7963" />
+    <SolidColorBrush x:Key="DemoSettingValueBrushFixed" Color="#FF939D8A" />
+    <SolidColorBrush x:Key="DemoDividerBrushFixed" Color="#FFDFE6D7" />
+    <SolidColorBrush x:Key="DemoReplayFillBrushFixed" Color="#FF3C5539" />
+    <SolidColorBrush x:Key="DemoReplayInkBrushFixed" Color="#FFF3F6EC" />
+    <SolidColorBrush x:Key="DemoStatusDotBrushFixed" Color="#FF93A57F" />
+    <SolidColorBrush x:Key="DemoStatusFallbackBrushFixed" Color="#FFBC9867" />
+    <SolidColorBrush x:Key="DemoHelpBrushFixed" Color="#FF9AA390" />
+    <SolidColorBrush x:Key="DemoUnderCardBrushFixed" Color="#FF889087" />
+    <SolidColorBrush x:Key="DemoCreditInkBrushFixed" Color="#FF7E897A" />
+    <SolidColorBrush x:Key="DemoCreditLineBrushFixed" Color="#FFB4BDAE" />
+    <SolidColorBrush x:Key="DemoFooterBrushFixed" Color="#FFA4AC9E" />
+    <SolidColorBrush x:Key="DemoSliderFillBrushFixed" Color="#FF7D9766" />
+    <SolidColorBrush x:Key="DemoSliderTrackBrushFixed" Color="#FFDFE5D8" />
+    <SolidColorBrush x:Key="DemoSliderThumbBrushFixed" Color="#FF6D8B54" />
+    <SolidColorBrush x:Key="DemoDialogInkBrushFixed" Color="#FF304235" />
+    <SolidColorBrush x:Key="DemoDialogBodyBrushFixed" Color="#FF75816F" />
+    <SolidColorBrush x:Key="DemoDialogLineBrushFixed" Color="#FFE3E9DD" />
+    <SolidColorBrush x:Key="DemoDialogLinkBrushFixed" Color="#FF76826E" />
 
     <Style x:Key="DemoSlider" TargetType="Slider">
-      <Setter Property="Foreground" Value="{StaticResource DemoSliderFillBrush}" />
-      <Setter Property="Background" Value="{StaticResource DemoSliderTrackBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource DemoSliderFillBrushFixed}" />
+      <Setter Property="Background" Value="{StaticResource DemoSliderTrackBrushFixed}" />
       <Setter Property="MinHeight" Value="24" />
     </Style>
 
@@ -59,15 +59,15 @@
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="RadioButton">
-            <Border x:Name="Shell" CornerRadius="12" BorderThickness="1" BorderBrush="Transparent" Background="{StaticResource DemoOptionFillBrush}" Padding="12,11">
+            <Border x:Name="Shell" CornerRadius="12" BorderThickness="1" BorderBrush="Transparent" Background="{StaticResource DemoOptionFillBrushFixed}" Padding="12,11">
               <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="CheckStates">
                   <VisualState x:Name="Checked">
                     <VisualState.Setters>
-                      <Setter Target="Shell.Background" Value="{StaticResource DemoOptionCheckedFillBrush}" />
-                      <Setter Target="Shell.BorderBrush" Value="{StaticResource DemoOptionCheckedBorderBrush}" />
-                      <Setter Target="Dot.Background" Value="{StaticResource DemoRadioFillBrush}" />
-                      <Setter Target="Dot.BorderBrush" Value="{StaticResource DemoRadioFillBrush}" />
+                      <Setter Target="Shell.Background" Value="{StaticResource DemoOptionCheckedFillBrushFixed}" />
+                      <Setter Target="Shell.BorderBrush" Value="{StaticResource DemoOptionCheckedBorderBrushFixed}" />
+                      <Setter Target="Dot.Background" Value="{StaticResource DemoRadioFillBrushFixed}" />
+                      <Setter Target="Dot.BorderBrush" Value="{StaticResource DemoRadioFillBrushFixed}" />
                     </VisualState.Setters>
                   </VisualState>
                   <VisualState x:Name="Unchecked" />
@@ -77,7 +77,7 @@
                   <VisualState x:Name="Normal" />
                   <VisualState x:Name="PointerOver">
                     <VisualState.Setters>
-                      <Setter Target="Shell.BorderBrush" Value="{StaticResource DemoOptionCheckedBorderBrush}" />
+                      <Setter Target="Shell.BorderBrush" Value="{StaticResource DemoOptionCheckedBorderBrushFixed}" />
                     </VisualState.Setters>
                   </VisualState>
                   <VisualState x:Name="Pressed" />
@@ -90,7 +90,7 @@
                   <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center" />
-                <Border x:Name="Dot" Grid.Column="1" Width="11" Height="11" CornerRadius="6" BorderThickness="1" BorderBrush="{StaticResource DemoRadioBorderBrush}" Background="Transparent" VerticalAlignment="Center" />
+                <Border x:Name="Dot" Grid.Column="1" Width="11" Height="11" CornerRadius="6" BorderThickness="1" BorderBrush="{StaticResource DemoRadioBorderBrushFixed}" Background="Transparent" VerticalAlignment="Center" />
               </Grid>
             </Border>
           </ControlTemplate>
@@ -109,9 +109,9 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Grid Height="{utu:Responsive Narrow=70, Wide=88, Layout={StaticResource DemoLayout}}" MaxWidth="1120" Margin="{utu:Responsive Narrow='20,0', Wide='36,0', Layout={StaticResource DemoLayout}}" BorderBrush="{StaticResource DemoHeaderLineBrush}" BorderThickness="0,0,0,1">
+        <Grid Height="{utu:Responsive Narrow=70, Wide=88, Layout={StaticResource DemoLayout}}" MaxWidth="1120" Margin="{utu:Responsive Narrow='20,0', Wide='36,0', Layout={StaticResource DemoLayout}}" BorderBrush="{StaticResource DemoHeaderLineBrushFixed}" BorderThickness="0,0,0,1">
           <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" HorizontalAlignment="Left">
-            <Viewbox Width="24" Height="24"><Path Style="{StaticResource RolodexIconGlobe}" Stroke="{StaticResource DemoBrandIconBrush}" StrokeThickness="1.1" /></Viewbox>
+            <Viewbox Width="24" Height="24"><Path Style="{StaticResource RolodexIconGlobe}" Stroke="{StaticResource DemoBrandIconBrushFixed}" StrokeThickness="1.1" /></Viewbox>
             <TextBlock Text="Destination Rolodex" FontFamily="{StaticResource RolodexFontSemiBold}" FontSize="13" Foreground="{StaticResource RolodexPageInkBrushFixed}" VerticalAlignment="Center" />
           </StackPanel>
           <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center" HorizontalAlignment="Right">
@@ -134,7 +134,7 @@
           <StackPanel x:Name="CardColumn" Grid.Row="0" Grid.Column="0" MaxWidth="480" HorizontalAlignment="Stretch">
             <Grid Margin="0,0,0,19">
               <TextBlock Text="Where to next?" FontFamily="{StaticResource RolodexFontMedium}" FontSize="{utu:Responsive Narrow=27, Wide=29, Layout={StaticResource DemoLayout}}" Foreground="{StaticResource RolodexPageInkBrushFixed}" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-              <TextBlock Text="{x:Bind ViewModel.CountText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoMutedBrush}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,0,4" />
+              <TextBlock Text="{x:Bind ViewModel.CountText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoMutedBrushFixed}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,0,4" />
             </Grid>
 
             <controls:DestinationRolodexCard x:Name="Card"
@@ -151,12 +151,12 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
               </Grid.ColumnDefinitions>
-              <TextBlock FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoUnderCardBrush}" VerticalAlignment="Center" TextWrapping="Wrap">
+              <TextBlock FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoUnderCardBrushFixed}" VerticalAlignment="Center" TextWrapping="Wrap">
                 <Run Text="Scroll or swipe to choose" /><Run Text=" · ↑ ↓ also work" />
               </TextBlock>
-              <HyperlinkButton Grid.Column="1" Click="OnOpenCredits" Padding="0" MinHeight="44" Foreground="{StaticResource DemoCreditInkBrush}" AutomationProperties.Name="About the photos">
-                <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource DemoCreditLineBrush}" Padding="0,1">
-                  <TextBlock Text="About the photos" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoCreditInkBrush}" />
+              <HyperlinkButton Grid.Column="1" Click="OnOpenCredits" Padding="0" MinHeight="44" Foreground="{StaticResource DemoCreditInkBrushFixed}" AutomationProperties.Name="About the photos">
+                <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource DemoCreditLineBrushFixed}" Padding="0,1">
+                  <TextBlock Text="About the photos" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoCreditInkBrushFixed}" />
                 </Border>
               </HyperlinkButton>
             </Grid>
@@ -176,7 +176,7 @@
                       Grid.Row="{utu:Responsive Narrow=1, Wide=0, Layout={StaticResource DemoLayout}}"
                       Grid.Column="{utu:Responsive Narrow=0, Wide=1, Layout={StaticResource DemoLayout}}"
                       Padding="{utu:Responsive Narrow='0,25,0,5', Wide='0,57,0,0', Layout={StaticResource DemoLayout}}"
-                      BorderThickness="{utu:Responsive Narrow='0,1,0,0', Wide=0, Layout={StaticResource DemoLayout}}" BorderBrush="{StaticResource DemoDividerBrush}">
+                      BorderThickness="{utu:Responsive Narrow='0,1,0,0', Wide=0, Layout={StaticResource DemoLayout}}" BorderBrush="{StaticResource DemoDividerBrushFixed}">
             <Grid>
               <StackPanel HorizontalAlignment="Left">
                 <StackPanel x:Name="LabKicker" Orientation="Horizontal" Margin="0,0,0,10" />
@@ -186,30 +186,30 @@
                 <TextBlock Text="02" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="#FF8D9A86" HorizontalAlignment="Center" VerticalAlignment="Center" />
               </Border>
             </Grid>
-            <TextBlock Text="Two approved transitions. Same card, same interactions." Margin="0,9,0,20" FontFamily="{StaticResource RolodexFontRegular}" FontSize="11" LineHeight="17.6" Foreground="{StaticResource DemoIntroBrush}" TextWrapping="Wrap" />
+            <TextBlock Text="Two approved transitions. Same card, same interactions." Margin="0,9,0,20" FontFamily="{StaticResource RolodexFontRegular}" FontSize="11" LineHeight="17.6" Foreground="{StaticResource DemoIntroBrushFixed}" TextWrapping="Wrap" />
 
             <StackPanel Spacing="7" AutomationProperties.Name="Photo transition">
               <RadioButton x:Name="MorphOption" Style="{StaticResource EffectOption}" GroupName="Effect" IsChecked="{x:Bind ViewModel.IsMorph, Mode=OneWay}" Checked="OnMorphChecked" AutomationProperties.Name="Morph blend">
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                  <Viewbox Width="36" Height="36" VerticalAlignment="Center"><Path Data="M8 12c7-8 14 8 24 0M8 20c7-8 14 8 24 0M8 28c7-8 14 8 24 0" Stroke="{StaticResource DemoOptionGlyphBrush}" StrokeThickness="0.95" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Width="40" Height="40" /></Viewbox>
+                  <Viewbox Width="36" Height="36" VerticalAlignment="Center"><Path Style="{StaticResource RolodexIconLabMorph}" /></Viewbox>
                   <StackPanel VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                      <TextBlock Text="Morph blend" FontFamily="{StaticResource RolodexFontMedium}" FontSize="12" Foreground="{StaticResource DemoOptionInkBrush}" />
+                      <TextBlock Text="Morph blend" FontFamily="{StaticResource RolodexFontMedium}" FontSize="12" Foreground="{StaticResource DemoOptionInkBrushFixed}" />
                       <TextBlock Text="01" FontFamily="{StaticResource RolodexFontRegular}" FontSize="8" Foreground="#FFA0AA94" VerticalAlignment="Center" />
                     </StackPanel>
-                    <TextBlock Text="Both scenes bend and reshape through a shared flow field." Margin="0,4,0,0" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" LineHeight="15.5" Foreground="{StaticResource DemoOptionDescriptionBrush}" TextWrapping="Wrap" />
+                    <TextBlock Text="Both scenes bend and reshape through a shared flow field." Margin="0,4,0,0" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" LineHeight="15.5" Foreground="{StaticResource DemoOptionDescriptionBrushFixed}" TextWrapping="Wrap" />
                   </StackPanel>
                 </StackPanel>
               </RadioButton>
               <RadioButton x:Name="LiquidOption" Style="{StaticResource EffectOption}" GroupName="Effect" IsChecked="{x:Bind ViewModel.IsLiquid, Mode=OneWay}" Checked="OnLiquidChecked" AutomationProperties.Name="Liquid warp">
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                  <Viewbox Width="36" Height="36" VerticalAlignment="Center"><Path Data="M8 20a12 10 0 1 0 24 0a12 10 0 1 0 -24 0 M13 20a7 6 0 1 0 14 0a7 6 0 1 0 -14 0 M18 20a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" Stroke="{StaticResource DemoOptionGlyphBrush}" StrokeThickness="0.95" Width="40" Height="40" /></Viewbox>
+                  <Viewbox Width="36" Height="36" VerticalAlignment="Center"><Path Style="{StaticResource RolodexIconLabLiquid}" /></Viewbox>
                   <StackPanel VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                      <TextBlock Text="Liquid warp" FontFamily="{StaticResource RolodexFontMedium}" FontSize="12" Foreground="{StaticResource DemoOptionInkBrush}" />
+                      <TextBlock Text="Liquid warp" FontFamily="{StaticResource RolodexFontMedium}" FontSize="12" Foreground="{StaticResource DemoOptionInkBrushFixed}" />
                       <TextBlock Text="02" FontFamily="{StaticResource RolodexFontRegular}" FontSize="8" Foreground="#FFA0AA94" VerticalAlignment="Center" />
                     </StackPanel>
-                    <TextBlock Text="A refractive ripple reveals the next destination." Margin="0,4,0,0" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" LineHeight="15.5" Foreground="{StaticResource DemoOptionDescriptionBrush}" TextWrapping="Wrap" />
+                    <TextBlock Text="A refractive ripple reveals the next destination." Margin="0,4,0,0" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" LineHeight="15.5" Foreground="{StaticResource DemoOptionDescriptionBrushFixed}" TextWrapping="Wrap" />
                   </StackPanel>
                 </StackPanel>
               </RadioButton>
@@ -222,57 +222,57 @@
               </Grid.ColumnDefinitions>
               <StackPanel>
                 <Grid Margin="0,0,0,8">
-                  <TextBlock Text="Duration" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrush}" />
-                  <TextBlock Text="{x:Bind ViewModel.DurationText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoSettingValueBrush}" HorizontalAlignment="Right" />
+                  <TextBlock Text="Duration" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrushFixed}" />
+                  <TextBlock Text="{x:Bind ViewModel.DurationText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoSettingValueBrushFixed}" HorizontalAlignment="Right" />
                 </Grid>
                 <Slider x:Name="DurationSlider" Style="{StaticResource DemoSlider}" Minimum="500" Maximum="2400" StepFrequency="50" Value="{x:Bind ViewModel.DurationMs, Mode=TwoWay}" AutomationProperties.Name="Transition duration in milliseconds" />
               </StackPanel>
               <StackPanel Grid.Column="1">
                 <Grid Margin="0,0,0,8">
-                  <TextBlock Text="Intensity" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrush}" />
-                  <TextBlock Text="{x:Bind ViewModel.StrengthText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoSettingValueBrush}" HorizontalAlignment="Right" />
+                  <TextBlock Text="Intensity" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrushFixed}" />
+                  <TextBlock Text="{x:Bind ViewModel.StrengthText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoSettingValueBrushFixed}" HorizontalAlignment="Right" />
                 </Grid>
                 <Slider x:Name="StrengthSlider" Style="{StaticResource DemoSlider}" Minimum="0" Maximum="100" StepFrequency="1" Value="{x:Bind ViewModel.StrengthPercent, Mode=TwoWay}" AutomationProperties.Name="Transition intensity" />
               </StackPanel>
             </Grid>
 
-            <StackPanel Margin="0,21,0,0" Padding="0,20,0,0" BorderThickness="0,1,0,0" BorderBrush="{StaticResource DemoDividerBrush}">
+            <StackPanel Margin="0,21,0,0" Padding="0,20,0,0" BorderThickness="0,1,0,0" BorderBrush="{StaticResource DemoDividerBrushFixed}">
               <Grid Margin="0,0,0,8">
-                <TextBlock Text="Scrub the transition" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrush}" />
-                <TextBlock Text="{x:Bind ViewModel.TimelineText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoSettingValueBrush}" HorizontalAlignment="Right" />
+                <TextBlock Text="Scrub the transition" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrushFixed}" />
+                <TextBlock Text="{x:Bind ViewModel.TimelineText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoSettingValueBrushFixed}" HorizontalAlignment="Right" />
               </Grid>
               <Slider x:Name="TimelineSlider" Style="{StaticResource DemoSlider}" Minimum="0" Maximum="1000" StepFrequency="1" Value="{x:Bind ViewModel.Timeline, Mode=OneWay}" AutomationProperties.Name="Transition progress" />
               <Grid Margin="0,9,0,0">
                 <TextBlock Text="{x:Bind ViewModel.RouteFrom, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="#FF849079" HorizontalAlignment="Left" />
-                <Viewbox Width="18" Height="13" HorizontalAlignment="Center"><Path Data="M4 12h16m-5-5 5 5-5 5" Stroke="#FFA5B29A" StrokeThickness="1.25" Width="24" Height="24" /></Viewbox>
+                <Viewbox Width="18" Height="13" HorizontalAlignment="Center"><Path Style="{StaticResource RolodexIconArrowRight}" /></Viewbox>
                 <TextBlock Text="{x:Bind ViewModel.RouteTo, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="#FF849079" HorizontalAlignment="Right" />
               </Grid>
-              <Button x:Name="ReplayButton" Command="{x:Bind ViewModel.ReplayCommand}" Margin="0,16,0,0" Height="44" HorizontalAlignment="Stretch" CornerRadius="10" BorderThickness="0" Background="{StaticResource DemoReplayFillBrush}" Foreground="{StaticResource DemoReplayInkBrush}" AutomationProperties.Name="Replay this transition">
+              <Button x:Name="ReplayButton" Command="{x:Bind ViewModel.ReplayCommand}" Margin="0,16,0,0" Height="44" HorizontalAlignment="Stretch" CornerRadius="10" BorderThickness="0" Background="{StaticResource DemoReplayFillBrushFixed}" Foreground="{StaticResource DemoReplayInkBrushFixed}" AutomationProperties.Name="Replay this transition">
                 <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
-                  <Viewbox Width="16" Height="16"><Path Data="M4 9a8 8 0 1 1 1 9M4 3v6h6" Stroke="{StaticResource DemoReplayInkBrush}" StrokeThickness="1.25" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" Width="24" Height="24" /></Viewbox>
-                  <TextBlock Text="Replay this transition" FontFamily="{StaticResource RolodexFontMedium}" FontSize="11" Foreground="{StaticResource DemoReplayInkBrush}" VerticalAlignment="Center" />
+                  <Viewbox Width="16" Height="16"><Path Style="{StaticResource RolodexIconReplay}" Stroke="{StaticResource DemoReplayInkBrushFixed}" /></Viewbox>
+                  <TextBlock Text="Replay this transition" FontFamily="{StaticResource RolodexFontMedium}" FontSize="11" Foreground="{StaticResource DemoReplayInkBrushFixed}" VerticalAlignment="Center" />
                   <Border BorderThickness="1" BorderBrush="#29FFFFFF" CornerRadius="3" Padding="4,2" Margin="5,0,0,0" Opacity="0.6">
-                    <TextBlock Text="R" FontFamily="{StaticResource RolodexFontRegular}" FontSize="8" Foreground="{StaticResource DemoReplayInkBrush}" />
+                    <TextBlock Text="R" FontFamily="{StaticResource RolodexFontRegular}" FontSize="8" Foreground="{StaticResource DemoReplayInkBrushFixed}" />
                   </Border>
                 </StackPanel>
               </Button>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,22,0,0" MinHeight="12">
-              <Ellipse x:Name="StatusDot" Width="4" Height="4" Fill="{StaticResource DemoStatusDotBrush}" VerticalAlignment="Center" />
+              <Ellipse x:Name="StatusDot" Width="4" Height="4" Fill="{StaticResource DemoStatusDotBrushFixed}" VerticalAlignment="Center" />
               <TextBlock Text="{x:Bind ViewModel.RendererStatus, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="8" Foreground="#FF8E9C82" VerticalAlignment="Center" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
             </StackPanel>
-            <TextBlock Text="Scroll the card to browse. Switch effects to replay the same pair, or drag the timeline to inspect a frame." Margin="0,7,0,0" MaxWidth="295" HorizontalAlignment="Left" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" LineHeight="15.3" Foreground="{StaticResource DemoHelpBrush}" TextWrapping="Wrap" />
+            <TextBlock Text="Scroll the card to browse. Switch effects to replay the same pair, or drag the timeline to inspect a frame." Margin="0,7,0,0" MaxWidth="295" HorizontalAlignment="Left" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" LineHeight="15.3" Foreground="{StaticResource DemoHelpBrushFixed}" TextWrapping="Wrap" />
 
             <!-- Demo-only toggles: not part of the reusable card. -->
-            <StackPanel Margin="0,22,0,0" Padding="0,16,0,0" BorderThickness="0,1,0,0" BorderBrush="{StaticResource DemoDividerBrush}" Spacing="6">
-              <ToggleSwitch Header="Reduce motion" IsOn="{x:Bind ViewModel.IsReducedMotion, Mode=TwoWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrush}" />
-              <ToggleSwitch Header="Second card (Liquid Warp, independent)" IsOn="{x:Bind ViewModel.ShowSecondCard, Mode=TwoWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrush}" />
+            <StackPanel Margin="0,22,0,0" Padding="0,16,0,0" BorderThickness="0,1,0,0" BorderBrush="{StaticResource DemoDividerBrushFixed}" Spacing="6">
+              <ToggleSwitch Header="Reduce motion" IsOn="{x:Bind ViewModel.IsReducedMotion, Mode=TwoWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrushFixed}" />
+              <ToggleSwitch Header="Second card (Liquid Warp, independent)" IsOn="{x:Bind ViewModel.ShowSecondCard, Mode=TwoWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoSettingBrushFixed}" />
             </StackPanel>
           </StackPanel>
         </Grid>
 
-        <TextBlock Grid.Row="2" Text="UNO PLATFORM · SKIA RUNTIME EFFECT · MORPH BLEND AND LIQUID WARP" Padding="20,13,20,24" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoFooterBrush}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
+        <TextBlock Grid.Row="2" Text="UNO PLATFORM · SKIA RUNTIME EFFECT · MORPH BLEND AND LIQUID WARP" Padding="20,13,20,24" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoFooterBrushFixed}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
       </Grid>
     </ScrollViewer>
 

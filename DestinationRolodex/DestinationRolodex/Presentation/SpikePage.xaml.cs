@@ -51,12 +51,14 @@ public sealed partial class SpikePage : Page
         var h = App.HarnessOptions;
         if (h.Mode == "liquid") ModeSwitch.IsOn = true;
         if (h.Seek is { } s) ProgressSlider.Value = s * 1000;
+#if !__WASM__
         if (h.CapturePath is { } path)
         {
             await Task.Delay(h.SettleMs);
             await CaptureHelper.CaptureAsync(this, path);
             Environment.Exit(0);
         }
+#endif
 #endif
     }
 

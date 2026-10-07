@@ -24,11 +24,11 @@ runtime rows are **untested**. WinAppSDK and iOS/macOS were not scaffolded (SPEC
 | A07 | All inputs | PARTIAL | Wheel/drag/click/keyboard/indicator/button paths are implemented in `DestinationRolodexCard` and covered by controller unit tests (wheel clamp + snap, drag momentum, cancelled drag, row click, type-ahead). Real pointer/keyboard injection was not run in this session (no App MCP); listed as a remaining gate. |
 | A08 | Focus/type-ahead | PARTIAL | Home/End/Page keys and letter search only handled when `OriginalSource` is the picker or the scene (`OnKeyDown`); type-ahead unit test passes. Live keyboard run pending (see A07). |
 | A09 | Effect endpoints | PASS | `fixtures/report.json` `endpointChecks`: `maxDiffAt0 = 0` and `maxDiffAt1 = 0` for both modes, all three pairs (byte-equal to the static frame; same shader, same crop/focal/camera). |
-| A10 | Morph evidence | PASS | `fixtures/fixed/morph-ph-jp-050.png`: shared displacement visible; `midpointVsCrossfadeMeanDiff` 14.9–18.9 (not an opacity dissolve); browser parity mean |diff| 1.1–2.9 (`browser-reference/report.json`, `compare-morph-*.png`). |
+| A10 | Morph evidence | PASS | `fixtures/fixed/morph-ph-jp-050.png` and the live on-screen frame `captures/desktop-autoplay-mid.png` (autoplay morph at 32 %, GPU path): shared displacement visible; `midpointVsCrossfadeMeanDiff` 14.9–18.9 (not an opacity dissolve); browser parity mean |diff| 1.1–2.9 (`browser-reference/report.json`, `compare-morph-*.png`). |
 | A11 | Liquid evidence | PASS | `fixtures/fixed/liquid-ph-jp-050.png` (forward, origin lower) vs `liquid-jp-ph-050.png` (backward, origin upper): direction-dependent lens reveal; browser parity mean |diff| 0.5–2.0. |
 | A12 | Stable UI | PASS | Text and controls are XAML (`CountryPicker` rows are `TextBlock`s; the surface is below them). `captures/desktop-liquid-050.png`: labels, detail panel and card border unwarped mid-effect. |
 | A13 | Geometry/DPI | PASS (1x) / UNTESTED (high DPI) | `fixtures/report.json` `cameraCoverage`: 0 exposed pixels at ±37 px pan, ±2.8°/±3.8° tilt, zoom 1.65 and at the browse amplitude. Camera matrix unit tests. Scene clip follows the measured card width. 150%/200% display scale not run. |
-| A14 | Timing | PASS (loop measured) | Progress is elapsed active time (`TransitionCoordinator.Tick`); frame loop p50 15.55 ms, p95 16.91 ms over 12 s (`captures/perf.json`), so a 1200 ms effect lands within one frame of 1200 ms. Unit test `Endpoints_and_progress_follow_elapsed_time`. |
+| A14 | Timing | PASS (loop measured) | Progress is elapsed active time (`TransitionCoordinator.Tick`); frame loop p50 15.54 ms, p95 17.27 ms, max 47.7 ms over 12 s (`captures/perf.json`), so a 1200 ms effect lands within one frame of 1200 ms. Unit test `Endpoints_and_progress_follow_elapsed_time`. |
 | A15 | Rapid retarget | PASS | Unit test `Latest_target_wins_without_an_unbounded_queue`: a→b runs to completion, only the newest target (c) follows, a request for the photo already in flight empties the queue. 1,000 rapid steps settle on index 4 with 6 cached photos. |
 | A16 | Loading/failure | PASS | `captures/desktop-loading.png` (`--media-delay=30000`): own colour surface + "Loading Italy photo…" pill; `captures/desktop-failed.png` (`--media-fail=jp`): "Photo unavailable · check connection" + Retry; `Retry()` invalidates the cache entry and reloads. No stale photo under a new country after the 250 ms grace. |
 | A17 | Look around | PASS | `captures/desktop-look.png`, `captures/mobile-look.png`: same destination, picker hidden, title + credit + camera pill; pan/zoom clamped (`CameraController` tests); Escape returns focus to the picker (`OnKeyDown`). |
@@ -40,7 +40,7 @@ runtime rows are **untested**. WinAppSDK and iOS/macOS were not scaffolded (SPEC
 | A23 | Accessibility | PARTIAL | Real XAML semantics: picker is the single focusable selection surface (`AutomationProperties.Name`), rows are `AccessibilityView=Raw`, dots/nav/play/look/zoom/retry have names, settled manual changes update a `LiveSetting=Polite` announcer, hit regions ≥ 44 px (dots 28×44). Screen-reader, large-text and contrast passes were not run. |
 | A24 | Offline assets | PASS | Six originals packaged under `Assets/Destinations` (ids ph, jp, it, no, is, nz; 1400×1050 / 1400×933 / 1280×853); loaded through `ms-appx`; no network path exists in the app. |
 | A25 | Multiple instances | PASS | `captures/desktop-second.png`: card 2 (Liquid Warp, index 3, paused) beside card 1 (Morph Blend, index 0, playing); every controller, cache, surface and renderer is per instance (no statics except the SkSL source). |
-| A26 | Resources/performance | PASS (desktop) | Effect compiled once per card; one short-lived `SKShader` per frame; decode on the thread pool; cache budget 96 MB with pinning and deferred disposal; 1,000 steps: 6 entries, 31.8 MB, working set 464 MB; `RenderOverride` p95 0.044 ms (command recording; GPU work is asynchronous); loop p95 16.9 ms. Release configuration not profiled. |
+| A26 | Resources/performance | PASS (desktop) | Effect compiled once per card; one short-lived `SKShader` per frame; decode on the thread pool; cache budget 96 MB with pinning and deferred disposal; 1,000 steps: 6 entries, 31.8 MB, working set 450 MB; `RenderOverride` p95 0.056 ms (command recording; GPU work is asynchronous); loop p95 17.3 ms. Release configuration not profiled. |
 | A27 | Platform evidence | PASS for desktop; others labelled | Desktop: Windows 11 Pro 10.0.26200, Win32 host, Skia/OpenGL, Debug. Android and WebAssembly: build status below, runtime untested. WinAppSDK, iOS, macOS: not built. |
 | A28 | Final parity proof | PASS | Fixed-progress captures for both modes and both directions (`fixtures/fixed/*`), browser side-by-sides (`browser-reference/compare-*.png`), playback frame sequences (`fixtures/frames/*`, 37 frames each) assembled into `recordings/*.mp4`. |
 
@@ -48,12 +48,12 @@ runtime rows are **untested**. WinAppSDK and iOS/macOS were not scaffolded (SPEC
 
 | Metric | Value | Source |
 | --- | --- | --- |
-| Frame-loop interval, 12 s autoplay with effects | p50 15.55 ms · p95 16.91 ms · max 125.97 ms | `captures/perf.json` |
-| `RenderOverride` duration (command recording) | p50 0.030 ms · p95 0.044 ms | `captures/perf.json` |
+| Frame-loop interval, 12 s autoplay with effects | p50 15.54 ms · p95 17.27 ms · max 47.69 ms | `captures/perf.json` |
+| `RenderOverride` duration (command recording) | p50 0.032 ms · p95 0.056 ms | `captures/perf.json` |
 | CPU-raster full shader frame (fixture export, 480×530) | p50 95.7 ms · p95 151.6 ms | `fixtures/report.json` (offscreen reference path, not the on-screen path) |
-| 1,000-step loop | 5.8 s · cache 6 entries / 31.8 MB · 0 retired · managed 31.9 MB | `captures/desktop-steps.png.json` |
+| 1,000-step loop | 6.0 s · cache 6 entries / 31.8 MB · 0 retired · managed 31.2 MB | `captures/desktop-steps.png.json` |
 
-The max interval spikes (126–184 ms) coincide with first decodes and GC; they were not profiled further. Release builds were not measured.
+Interval spikes above 100 ms appear only in the 1,000-step run (first decodes under a synchronous step burst); the 12 s autoplay run's worst frame was 47.7 ms. Release builds were not measured.
 
 ## Known deltas (also in SPEC.md)
 
