@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "type": "orthogonal-state-contract",
+  "selectionAuthority": "card-view-model",
+  "visualPositionAuthority": "picker-controller",
+  "renderProgressAuthority": "transition-coordinator",
+  "regions": {
+    "view": [
+      "browse",
+      "look"
+    ],
+    "playback": [
+      "paused",
+      "playing"
+    ],
+    "media": [
+      "empty",
+      "loading",
+      "ready",
+      "failed"
+    ],
+    "render": [
+      "idle",
+      "transitioning",
+      "fallback",
+      "unavailable"
+    ],
+    "motionPolicy": [
+      "full",
+      "reduced"
+    ],
+    "lifecycle": [
+      "visible",
+      "occluded",
+      "unloaded"
+    ],
+    "debug": [
+      "off",
+      "replaying",
+      "scrubbing"
+    ]
+  },
+  "invariants": [
+    "look => paused and picker not hit-testable",
+    "reduced => no procedural transition or passive camera animation",
+    "unloaded => no subscribed frame callbacks or owned active GPU resources",
+    "media loading/failed => no unlabeled old photo under a new country",
+    "debug scrubbing => tour paused",
+    "empty => navigation and tour disabled",
+    "new async generation => old load completions cannot mount"
+  ],
+  "actions": [
+    {
+      "id": "choose",
+      "trigger": "wheel/swipe/key/neighbor/indicator/prev-next",
+      "effects": [
+        "pause tour",
+        "exit debug preview",
+        "update target position",
+        "select logical country",
+        "start latest-generation media preparation"
+      ]
+    },
+    {
+      "id": "media-ready",
+      "trigger": "latest decode completion",
+      "effects": [
+        "prepare leased source and target",
+        "render configured effect when supported and motion full",
+        "otherwise present explicit fallback/immediate update"
+      ]
+    },
+    {
+      "id": "look-toggle",
+      "trigger": "look/back button or Escape",
+      "effects": [
+        "pause tour",
+        "exit preview",
+        "toggle browse/look",
+        "reset camera",
+        "restore picker focus on Escape"
+      ]
+    },
+    {
+      "id": "play",
+      "trigger": "tour button",
+      "effects": [
+        "enable explicit tour unless no destinations",
+        "respect reduced motion"
+      ]
+    },
+    {
+      "id": "retry",
+      "trigger": "retry button",
+      "effects": [
+        "invalidate failed cache entry",
+        "start new media generation"
+      ]
+    },
+    {
+      "id": "seek",
+      "trigger": "demo timeline",
+      "effects": [
+        "pause tour",
+        "retain last test pair",
+        "draw deterministic progress",
+        "sync debug picker only"
+      ]
+    },
+    {
+      "id": "unload",
+      "trigger": "control unloaded",
+      "effects": [
+        "cancel outstanding preparation",
+        "detach frame clock/input/lifecycle handlers",
+        "dispose owned graphics leases"
+      ]
+    }
+  ]
+}

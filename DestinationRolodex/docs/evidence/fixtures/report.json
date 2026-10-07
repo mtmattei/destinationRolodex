@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-07T19:27:36.3171541Z",
+  "sceneSize": [480, 530],
+  "layerSize": [604.8, 667.8],
+  "backend": "SkiaSharp CPU raster (SKSurface.Create), same SkSL as the SKCanvasElement path",
+  "runtimeEffect": "compiled",
+  "photos": {
+    "ph": [1400, 1050], "jp": [1400, 1050], "it": [1400, 933]
+  },
+  "fixedCaptures": ["morph-ph-jp-000.png", "morph-ph-jp-025.png", "morph-ph-jp-050.png", "morph-ph-jp-075.png", "morph-ph-jp-100.png", "liquid-ph-jp-000.png", "liquid-ph-jp-025.png", "liquid-ph-jp-050.png", "liquid-ph-jp-075.png", "liquid-ph-jp-100.png", "morph-jp-ph-000.png", "morph-jp-ph-025.png", "morph-jp-ph-050.png", "morph-jp-ph-075.png", "morph-jp-ph-100.png", "liquid-jp-ph-000.png", "liquid-jp-ph-025.png", "liquid-jp-ph-050.png", "liquid-jp-ph-075.png", "liquid-jp-ph-100.png", "morph-jp-it-000.png", "morph-jp-it-025.png", "morph-jp-it-050.png", "morph-jp-it-075.png", "morph-jp-it-100.png", "liquid-jp-it-000.png", "liquid-jp-it-025.png", "liquid-jp-it-050.png", "liquid-jp-it-075.png", "liquid-jp-it-100.png"],
+  "endpointChecks": [
+    { "pair": "ph-jp", "mode": "morph", "maxDiffAt0": 0, "maxDiffAt1": 0, "midpointVsCrossfadeMeanDiff": 18.91, "midpointVsSourceMeanDiff": 28.13 },
+    { "pair": "ph-jp", "mode": "liquid", "maxDiffAt0": 0, "maxDiffAt1": 0, "midpointVsCrossfadeMeanDiff": 22.28, "midpointVsSourceMeanDiff": 45.25 },
+    { "pair": "jp-ph", "mode": "morph", "maxDiffAt0": 0, "maxDiffAt1": 0, "midpointVsCrossfadeMeanDiff": 14.89, "midpointVsSourceMeanDiff": 30.29 },
+    { "pair": "jp-ph", "mode": "liquid", "maxDiffAt0": 0, "maxDiffAt1": 0, "midpointVsCrossfadeMeanDiff": 25.65, "midpointVsSourceMeanDiff": 49.27 },
+    { "pair": "jp-it", "mode": "morph", "maxDiffAt0": 0, "maxDiffAt1": 0, "midpointVsCrossfadeMeanDiff": 17.56, "midpointVsSourceMeanDiff": 35.19 },
+    { "pair": "jp-it", "mode": "liquid", "maxDiffAt0": 0, "maxDiffAt1": 0, "midpointVsCrossfadeMeanDiff": 27.96, "midpointVsSourceMeanDiff": 56.3 }
+  ],
+  "cameraCoverage": [
+    { "pose": "t(37,37) rx2.8 ry3.8 z1", "exposedPixels": 0 },
+    { "pose": "t(-37,-37) rx-2.8 ry-3.8 z1", "exposedPixels": 0 },
+    { "pose": "t(37,-37) rx-2.8 ry3.8 z1.65", "exposedPixels": 0 },
+    { "pose": "t(-37,37) rx2.8 ry-3.8 z1.65", "exposedPixels": 0 },
+    { "pose": "t(12,12) rx1.25 ry1.6 z1", "exposedPixels": 0 }
+  ],
+  "sequences": ["frames/morph-ph-jp (37 frames)", "frames/liquid-ph-jp (37 frames)", "frames/morph-jp-ph (37 frames)", "frames/liquid-jp-ph (37 frames)"],
+  "cpuRasterRenderMs": { "count": 218, "p50": 95.67, "p95": 151.63, "max": 180.42 },
+  "status": "ok"
+}

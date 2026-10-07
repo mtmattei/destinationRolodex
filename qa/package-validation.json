@@ -1,0 +1,73 @@
+{
+  "checks": [
+    {
+      "name": "01 graph version",
+      "passed": true
+    },
+    {
+      "name": "02 approved transitions",
+      "passed": true
+    },
+    {
+      "name": "03 unique node IDs",
+      "passed": true
+    },
+    {
+      "name": "04 unique edge IDs",
+      "passed": true
+    },
+    {
+      "name": "05 edge endpoints resolve",
+      "passed": true
+    },
+    {
+      "name": "06 parent references resolve",
+      "passed": true
+    },
+    {
+      "name": "07 containment is acyclic",
+      "passed": true
+    },
+    {
+      "name": "08 evidence files exist",
+      "passed": true
+    },
+    {
+      "name": "09 provenance marked",
+      "passed": true
+    },
+    {
+      "name": "10 ownership references resolve",
+      "passed": true
+    },
+    {
+      "name": "11 state regions and invariants",
+      "passed": true
+    },
+    {
+      "name": "12 matching six asset IDs",
+      "passed": true
+    },
+    {
+      "name": "13 default tokens match",
+      "passed": true
+    },
+    {
+      "name": "14 approved HTML and shader modes",
+      "passed": true
+    }
+  ],
+  "passed": 14,
+  "total": 14,
+  "requiredFilesMissing": [],
+  "pythonSyntaxErrors": [],
+  "fullSizePhotosMissing": [
+    "assets/photographs/ph.jpg",
+    "assets/photographs/jp.jpg",
+    "assets/photographs/it.jpg",
+    "assets/photographs/no.jpg",
+    "assets/photographs/is.jpg",
+    "assets/photographs/nz.jpg"
+  ],
+  "scope": "Structural/source consistency only; no Uno build, device test or full semantic-proof claim."
+}

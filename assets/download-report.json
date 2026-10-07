@@ -1,0 +1,71 @@
+{
+  "time": "2026-10-07T19:00:25.684855+00:00",
+  "results": [
+    {
+      "id": "ph",
+      "path": "assets/photographs/ph.jpg",
+      "sourceUrl": "https://images.unsplash.com/photo-1758782551890-0f47a570859c?auto=format&fit=crop&w=1400&q=85",
+      "status": "downloaded",
+      "retrievalUrl": "https://images.unsplash.com/photo-1758782551890-0f47a570859c?fit=crop&w=1400&q=85&fm=jpg",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 501473,
+      "sha256": "0604798e1a5cf4e9a3b1bb5e9cb4e77dac5e007a238f9bfc6c1e16799b99fa52"
+    },
+    {
+      "id": "jp",
+      "path": "assets/photographs/jp.jpg",
+      "sourceUrl": "https://images.unsplash.com/photo-1635861105962-ff85ca1ce355?auto=format&fit=crop&w=1400&q=85",
+      "status": "downloaded",
+      "retrievalUrl": "https://images.unsplash.com/photo-1635861105962-ff85ca1ce355?fit=crop&w=1400&q=85&fm=jpg",
+      "width": 1400,
+      "height": 1050,
+      "bytes": 139578,
+      "sha256": "bb50e1330f16c56847a27fb97cae1d6d804e60d8c937521039ffaf216a05554b"
+    },
+    {
+      "id": "it",
+      "path": "assets/photographs/it.jpg",
+      "sourceUrl": "https://images.unsplash.com/photo-1741893041975-94a0e8656209?auto=format&fit=crop&w=1400&q=85",
+      "status": "downloaded",
+      "retrievalUrl": "https://images.unsplash.com/photo-1741893041975-94a0e8656209?fit=crop&w=1400&q=85&fm=jpg",
+      "width": 1400,
+      "height": 933,
+      "bytes": 297307,
+      "sha256": "64b23831e635a6aa522ea88ed7ecafa5598f92ef75cd54e304fae71a90aff1af"
+    },
+    {
+      "id": "no",
+      "path": "assets/photographs/no.jpg",
+      "sourceUrl": "https://images.unsplash.com/photo-1710762635726-531b4a22d4ca?auto=format&fit=crop&w=1400&q=85",
+      "status": "downloaded",
+      "retrievalUrl": "https://images.unsplash.com/photo-1710762635726-531b4a22d4ca?fit=crop&w=1400&q=85&fm=jpg",
+      "width": 1400,
+      "height": 933,
+      "bytes": 443229,
+      "sha256": "2c49beefd3ef108ba4eeb10c25313731e491e3096360a5e5cc6681f4c882c01b"
+    },
+    {
+      "id": "is",
+      "path": "assets/photographs/is.jpg",
+      "sourceUrl": "https://images.unsplash.com/photo-1532586733327-54ac07aa1154?auto=format&fit=crop&w=1400&q=85",
+      "status": "downloaded",
+      "retrievalUrl": "https://images.unsplash.com/photo-1532586733327-54ac07aa1154?fit=crop&w=1400&q=85&fm=jpg",
+      "width": 1400,
+      "height": 933,
+      "bytes": 389000,
+      "sha256": "d556359b8e7b8ed589ca1a9d1e0614cbb5950ee07c6681b7c81266d7f62d8039"
+    },
+    {
+      "id": "nz",
+      "path": "assets/photographs/nz.jpg",
+      "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Milford_Sound%2C_New_Zealand_%28Unsplash_lSUx0xM2bEo%29.jpg/1280px-Milford_Sound%2C_New_Zealand_%28Unsplash_lSUx0xM2bEo%29.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org",
+      "status": "downloaded",
+      "retrievalUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Milford_Sound%2C_New_Zealand_%28Unsplash_lSUx0xM2bEo%29.jpg/1280px-Milford_Sound%2C_New_Zealand_%28Unsplash_lSUx0xM2bEo%29.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org",
+      "width": 1280,
+      "height": 853,
+      "bytes": 503521,
+      "sha256": "6cefc4f1d89bb2b1a8b69b28041af11de7054d39339c38f3afbdbb74a4d376a0"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f5f6f2">
+<meta name="description" content="An interactive destination card with an infinitely looping country selector and parallax photography.">
+<title>Destination Rolodex · Uno Handoff · Approved Transitions</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%232d493a'/%3E%3Cg fill='none' stroke='%23e5f5b6' stroke-width='1.4'%3E%3Ccircle cx='20' cy='20' r='12'/%3E%3Cellipse cx='20' cy='20' rx='5' ry='12'/%3E%3Cpath d='M8 20h24M11 13h18M11 27h18'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="demo.css">
+</head>
+<body>
+<div class="page-grain" aria-hidden="true"></div>
+<header>
+  <div class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="m15.8 8.2-2.5 5.1-5.1 2.5 2.5-5.1 5.1-2.5Z"/><path d="M12 1v3m0 16v3M1 12h3m16 0h3"/></svg>Destination Rolodex</div>
+  <span class="spec"><i></i>LIVE TRANSITIONS</span>
+</header>
+<main>
+ <div class="lab-layout"><div class="prototype">
+  <div class="component-label"><h1>Where to next?</h1><span class="country-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 12c-2.2-3.4-3.9-5-6.1-5a5 5 0 0 0 0 10c2.2 0 3.9-1.6 6.1-5s3.9-5 6.1-5a5 5 0 0 1 0 10c-2.2 0-3.9-1.6-6.1-5Z"/></svg>6 destinations</span></div>
+  <div class="destination-shell"><destination-rolodex id="destinations" autoplay interval="5500"></destination-rolodex></div>
+  <div class="under-card"><span class="instructions">Scroll or swipe to choose<span class="keyboard-hint"> · <kbd class="key">↑</kbd><kbd class="key">↓</kbd> also work</span></span><button class="credit-button" type="button" id="open-credits">About the photos</button></div>
+</div>
+<aside class="motion-lab" aria-labelledby="lab-title">
+  <div class="lab-heading"><div><div class="lab-kicker">APPROVED MOTION</div><h2 id="lab-title">Morph + liquid</h2></div><span class="lab-version">02</span></div>
+  <p class="lab-intro">Two approved transitions. Same card, same interactions.</p>
+  <div class="effect-options" role="radiogroup" aria-label="Photo transition">
+    <button class="effect-option" role="radio" aria-checked="true" data-effect="morph" tabindex="0">
+      <span class="effect-glyph" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M8 12c7-8 14 8 24 0M8 20c7-8 14 8 24 0M8 28c7-8 14 8 24 0"/></svg></span><span class="effect-copy"><span class="effect-name">Morph blend <small>01</small></span><span class="effect-description">Both scenes bend and reshape<br>through a shared flow field.</span></span><span class="radio-dot" aria-hidden="true"></span>
+    </button>
+    <button class="effect-option" role="radio" aria-checked="false" data-effect="liquid" tabindex="-1">
+      <span class="effect-glyph" aria-hidden="true"><svg viewBox="0 0 40 40"><ellipse cx="20" cy="20" rx="12" ry="10"/><ellipse cx="20" cy="20" rx="7" ry="6"/><circle cx="20" cy="20" r="2"/></svg></span><span class="effect-copy"><span class="effect-name">Liquid warp <small>02</small></span><span class="effect-description">A refractive ripple reveals<br>the next destination.</span></span><span class="radio-dot" aria-hidden="true"></span>
+    </button>
+</div>
+  <div class="lab-tuning">
+    <div class="setting"><div class="setting-head"><label for="duration">Duration</label><output for="duration" id="duration-value">1.20 s</output></div><input id="duration" type="range" min="500" max="2400" step="50" value="1200" aria-label="Transition duration in milliseconds"></div>
+    <div class="setting"><div class="setting-head"><label for="strength">Intensity</label><output for="strength" id="strength-value">60%</output></div><input id="strength" type="range" min="0" max="100" step="1" value="60" aria-label="Transition intensity"></div>
+  </div>
+  <div class="playback">
+    <div class="setting-head"><label for="timeline">Scrub the transition</label><output for="timeline" id="timeline-value">0%</output></div>
+    <input id="timeline" type="range" min="0" max="1000" step="1" value="0" aria-label="Transition progress">
+    <div class="test-route"><span id="route-from">Philippines</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-5-5 5 5-5 5"/></svg><span id="route-to">Japan</span></div>
+    <button id="replay" class="replay-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9a8 8 0 1 1 1 9M4 3v6h6"/></svg><span>Replay this transition</span><kbd>R</kbd></button>
+  </div>
+<div class="lab-status"><i id="renderer-dot"></i><span id="renderer-status" role="status">Preparing renderer</span></div>
+  <p class="lab-help">Scroll the card to browse. Switch effects to replay the same pair, or drag the timeline to inspect a frame.</p>
+</aside>
+
+ </div>
+</main>
+<dialog id="credits" aria-labelledby="credits-title">
+ <div class="dialog-head"><h2 id="credits-title">Behind the destinations</h2><button type="button" id="close-credits" aria-label="Close photo credits">×</button></div>
+ <p>Each country has its own background photo. This connected prototype uses the original online photos. A local loading preview is bundled. Run tools/fetch_assets.py, then tools/build_prototype.py --offline from the handoff root to embed all six photos.</p>
+ <ul id="photo-list"></ul>
+ <p class="note">Look around adds a constrained pan, zoom, and perspective effect to a flat photograph. It is not a 360° panorama or a reconstructed 3D scene. A small crop of the supplied reference image is included as the initial Philippines loading preview. The reference and this preview are not cleared production photography. The morph uses procedural texture displacement, not landmark tracking or true 3D geometry. Photo shaders need WebGL and cross-origin image permission; otherwise the original crossfade remains available.</p>
+</dialog>
+<script src="transition-engine.js"></script>
+<script src="rolodex.js"></script>
+<script src="destinations.js"></script>
+<script src="demo.js"></script>
+<script src="lab.js"></script>
+</body>
+</html>

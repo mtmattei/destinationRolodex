@@ -1,0 +1,623 @@
+{
+  "schemaVersion": "1.0",
+  "schemaNote": "Project-specific handoff schema; not a claimed official Uno graph standard.",
+  "name": "DestinationRolodex",
+  "decisions": "briefs/08-decisions.md",
+  "routes": [
+    {
+      "id": "demo",
+      "path": "/",
+      "status": "single-demo-page; no destination detail route is implied"
+    }
+  ],
+  "approvedTransitions": [
+    "morph",
+    "liquid"
+  ],
+  "sourcePriority": [
+    "current-user-decision",
+    "approved-live-prototype",
+    "explicit-port-decisions",
+    "layout-captures",
+    "original-inspiration"
+  ],
+  "nodes": [
+    {
+      "id": "demo",
+      "kind": "screen",
+      "label": "Single destination demo",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/index.html"
+        ],
+        "confidence": 1.0
+      },
+      "implementation": "DestinationDemoPage"
+    },
+    {
+      "id": "card",
+      "kind": "component",
+      "label": "Reusable destination card",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "demo",
+      "implementation": "DestinationRolodexCard"
+    },
+    {
+      "id": "scene",
+      "kind": "region",
+      "label": "Clipped photographic scene",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "card"
+    },
+    {
+      "id": "media",
+      "kind": "component",
+      "label": "Overscanned photo output",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/transition-engine.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "scene",
+      "implementation": "PhotoTransitionSurface"
+    },
+    {
+      "id": "overlay",
+      "kind": "region",
+      "label": "Stable readability wash",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "scene"
+    },
+    {
+      "id": "picker",
+      "kind": "component",
+      "label": "Infinite country picker",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "scene",
+      "implementation": "CountryPicker"
+    },
+    {
+      "id": "rows",
+      "kind": "content",
+      "label": "Pool of nine visible/recycled rows",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "picker"
+    },
+    {
+      "id": "markers",
+      "kind": "content",
+      "label": "Active-selection marks",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "picker"
+    },
+    {
+      "id": "topbar",
+      "kind": "region",
+      "label": "Destinations, count and tour",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "scene"
+    },
+    {
+      "id": "count",
+      "kind": "content",
+      "label": "Selected position",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "topbar"
+    },
+    {
+      "id": "play",
+      "kind": "control",
+      "label": "Play/pause tour",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "topbar"
+    },
+    {
+      "id": "look",
+      "kind": "control",
+      "label": "Look around / Back to list",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "scene"
+    },
+    {
+      "id": "camera",
+      "kind": "component",
+      "label": "Photo pan/zoom/reset controls",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "scene"
+    },
+    {
+      "id": "media-status",
+      "kind": "control",
+      "label": "Loading/error/retry",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "scene"
+    },
+    {
+      "id": "detail",
+      "kind": "region",
+      "label": "White detail footer",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "card"
+    },
+    {
+      "id": "location",
+      "kind": "content",
+      "label": "Destination location and region",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "detail"
+    },
+    {
+      "id": "description",
+      "kind": "content",
+      "label": "Short description",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "detail"
+    },
+    {
+      "id": "pagination",
+      "kind": "control",
+      "label": "Destination indicators",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "detail"
+    },
+    {
+      "id": "prev",
+      "kind": "control",
+      "label": "Previous country",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "detail"
+    },
+    {
+      "id": "next",
+      "kind": "control",
+      "label": "Next country",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/rolodex.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "detail"
+    },
+    {
+      "id": "lab",
+      "kind": "component",
+      "label": "Demo-only motion controls",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/lab.js"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "demo"
+    },
+    {
+      "id": "credits",
+      "kind": "component",
+      "label": "Photo credits dialog",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "prototype/source/index.html"
+        ],
+        "confidence": 1.0
+      },
+      "parent": "demo"
+    },
+    {
+      "id": "catalog",
+      "kind": "data",
+      "label": "Original six destinations",
+      "provenance": {
+        "status": "observed",
+        "evidence": [
+          "assets/destinations.json"
+        ],
+        "confidence": 1.0
+      },
+      "implementation": "DestinationRepository"
+    },
+    {
+      "id": "viewmodel",
+      "kind": "state",
+      "label": "Selection and commands",
+      "provenance": {
+        "status": "proposed",
+        "evidence": [
+          "briefs/04-architecture.md"
+        ],
+        "confidence": 0.85
+      },
+      "implementation": "DestinationCardViewModel"
+    },
+    {
+      "id": "coordinator",
+      "kind": "state",
+      "label": "Transition progress and source/target",
+      "provenance": {
+        "status": "proposed",
+        "evidence": [
+          "briefs/04-architecture.md"
+        ],
+        "confidence": 0.85
+      },
+      "implementation": "TransitionCoordinator"
+    },
+    {
+      "id": "cache",
+      "kind": "service",
+      "label": "Bounded decoded-photo leases",
+      "provenance": {
+        "status": "proposed",
+        "evidence": [
+          "briefs/04-architecture.md"
+        ],
+        "confidence": 0.85
+      },
+      "implementation": "DestinationMediaCache"
+    }
+  ],
+  "edges": [
+    {
+      "id": "demo:contains:card",
+      "from": "demo",
+      "to": "card",
+      "type": "contains"
+    },
+    {
+      "id": "card:contains:scene",
+      "from": "card",
+      "to": "scene",
+      "type": "contains"
+    },
+    {
+      "id": "scene:contains:media",
+      "from": "scene",
+      "to": "media",
+      "type": "contains"
+    },
+    {
+      "id": "scene:contains:overlay",
+      "from": "scene",
+      "to": "overlay",
+      "type": "contains"
+    },
+    {
+      "id": "scene:contains:picker",
+      "from": "scene",
+      "to": "picker",
+      "type": "contains"
+    },
+    {
+      "id": "picker:contains:rows",
+      "from": "picker",
+      "to": "rows",
+      "type": "contains"
+    },
+    {
+      "id": "picker:contains:markers",
+      "from": "picker",
+      "to": "markers",
+      "type": "contains"
+    },
+    {
+      "id": "scene:contains:topbar",
+      "from": "scene",
+      "to": "topbar",
+      "type": "contains"
+    },
+    {
+      "id": "topbar:contains:count",
+      "from": "topbar",
+      "to": "count",
+      "type": "contains"
+    },
+    {
+      "id": "topbar:contains:play",
+      "from": "topbar",
+      "to": "play",
+      "type": "contains"
+    },
+    {
+      "id": "scene:contains:look",
+      "from": "scene",
+      "to": "look",
+      "type": "contains"
+    },
+    {
+      "id": "scene:contains:camera",
+      "from": "scene",
+      "to": "camera",
+      "type": "contains"
+    },
+    {
+      "id": "scene:contains:media-status",
+      "from": "scene",
+      "to": "media-status",
+      "type": "contains"
+    },
+    {
+      "id": "card:contains:detail",
+      "from": "card",
+      "to": "detail",
+      "type": "contains"
+    },
+    {
+      "id": "detail:contains:location",
+      "from": "detail",
+      "to": "location",
+      "type": "contains"
+    },
+    {
+      "id": "detail:contains:description",
+      "from": "detail",
+      "to": "description",
+      "type": "contains"
+    },
+    {
+      "id": "detail:contains:pagination",
+      "from": "detail",
+      "to": "pagination",
+      "type": "contains"
+    },
+    {
+      "id": "detail:contains:prev",
+      "from": "detail",
+      "to": "prev",
+      "type": "contains"
+    },
+    {
+      "id": "detail:contains:next",
+      "from": "detail",
+      "to": "next",
+      "type": "contains"
+    },
+    {
+      "id": "demo:contains:lab",
+      "from": "demo",
+      "to": "lab",
+      "type": "contains"
+    },
+    {
+      "id": "demo:contains:credits",
+      "from": "demo",
+      "to": "credits",
+      "type": "contains"
+    },
+    {
+      "id": "catalog:feeds:viewmodel",
+      "from": "catalog",
+      "to": "viewmodel",
+      "type": "feeds"
+    },
+    {
+      "id": "viewmodel:binds:picker",
+      "from": "viewmodel",
+      "to": "picker",
+      "type": "binds"
+    },
+    {
+      "id": "viewmodel:binds:description",
+      "from": "viewmodel",
+      "to": "description",
+      "type": "binds"
+    },
+    {
+      "id": "viewmodel:binds:location",
+      "from": "viewmodel",
+      "to": "location",
+      "type": "binds"
+    },
+    {
+      "id": "viewmodel:binds:count",
+      "from": "viewmodel",
+      "to": "count",
+      "type": "binds"
+    },
+    {
+      "id": "picker:selects:viewmodel",
+      "from": "picker",
+      "to": "viewmodel",
+      "type": "selects"
+    },
+    {
+      "id": "prev:selects:viewmodel",
+      "from": "prev",
+      "to": "viewmodel",
+      "type": "selects"
+    },
+    {
+      "id": "next:selects:viewmodel",
+      "from": "next",
+      "to": "viewmodel",
+      "type": "selects"
+    },
+    {
+      "id": "pagination:selects:viewmodel",
+      "from": "pagination",
+      "to": "viewmodel",
+      "type": "selects"
+    },
+    {
+      "id": "viewmodel:requests:cache",
+      "from": "viewmodel",
+      "to": "cache",
+      "type": "requests"
+    },
+    {
+      "id": "cache:supplies-leased-images:coordinator",
+      "from": "cache",
+      "to": "coordinator",
+      "type": "supplies-leased-images"
+    },
+    {
+      "id": "coordinator:renders:media",
+      "from": "coordinator",
+      "to": "media",
+      "type": "renders"
+    },
+    {
+      "id": "lab:debug-controls:coordinator",
+      "from": "lab",
+      "to": "coordinator",
+      "type": "debug-controls"
+    },
+    {
+      "id": "look:activates:camera",
+      "from": "look",
+      "to": "camera",
+      "type": "activates"
+    },
+    {
+      "id": "play:commands:viewmodel",
+      "from": "play",
+      "to": "viewmodel",
+      "type": "commands"
+    },
+    {
+      "id": "media-status:retries:cache",
+      "from": "media-status",
+      "to": "cache",
+      "type": "retries"
+    },
+    {
+      "id": "catalog:feeds:credits",
+      "from": "catalog",
+      "to": "credits",
+      "type": "feeds"
+    }
+  ],
+  "tokens": "design/tokens.json",
+  "states": "design/state-machine.json",
+  "assets": "assets/manifest.json",
+  "ownership": {
+    "selection": "viewmodel",
+    "continuousPosition": "picker",
+    "frameProgress": "coordinator",
+    "decodedImages": "cache",
+    "drawing": "media"
+  },
+  "outOfScope": [
+    "WebView substitute",
+    "Orbit Depth transition",
+    "Slice Shift transition",
+    "content-aware landmark morph",
+    "360-degree reconstruction",
+    "booking/auth/maps",
+    "photo shader over text"
+  ],
+  "assumptions": [
+    "Target matrix and renderer must be confirmed in Stage 0",
+    "SkSL candidate is uncompiled",
+    "Six production photos require retrieval",
+    "Font metrics require target-app resolution"
+  ],
+  "gate": "tools/validate_package.py"
+}

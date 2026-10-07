@@ -1,0 +1,32 @@
+{
+  "checks": [
+    "JSON qa/package-validation.json",
+    "JSON qa/browser-results.json",
+    "JSON qa/math-test-vectors.json",
+    "JSON qa/delivery-validation.json",
+    "JSON assets/destinations.json",
+    "JSON assets/manifest.json",
+    "JSON design/design.graph.json",
+    "JSON design/state-machine.json",
+    "JSON design/design.graph.schema.json",
+    "JSON design/tokens.json",
+    "JSON reference/capture-metadata.json",
+    "Design graph JSON Schema validation",
+    "All SVG and XAML seed files are well-formed XML; not a native compilation test",
+    "Python files parse",
+    "All approved standalone source JS files pass node syntax check",
+    "START-HERE local links resolve",
+    "Missing-photo offline build fails explicitly",
+    "Photo-required validation rejects known six missing originals",
+    "15 vector icons; no font files",
+    "Offline diagnostic runs both shader modes without an external request",
+    "START-HERE renders with no JavaScript errors"
+  ],
+  "status": "passed",
+  "limitations": [
+    "Original photo retrieval remains unverified here.",
+    "SkSL and C# have not been compiled.",
+    "Native device behavior and performance are untested."
+  ],
+  "browser": "Chromium, ANGLE software WebGL, Xvfb"
+}

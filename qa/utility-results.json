@@ -1,0 +1,9 @@
+{
+  "passed": [
+    "Six exact configured URLs downloaded over local test HTTP",
+    "Decoded image dimensions and hashes recorded",
+    "Offline builder succeeds after six files exist",
+    "Offline output embeds all six images and removes remote media URLs"
+  ],
+  "scope": "These are utility unit tests against synthetic fixtures in an isolated temporary directory. Production source URLs and missing-asset manifest were NOT changed. This does not verify original photo retrieval."
+}

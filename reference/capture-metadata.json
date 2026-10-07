@@ -1,0 +1,14 @@
+{
+  "source": "prototype/approved.html",
+  "desktopViewport": [
+    1440,
+    1040
+  ],
+  "mobileViewport": [
+    390,
+    844
+  ],
+  "dpr": 1,
+  "mediaOverride": "For layout capture only, the Philippines remote URL is fulfilled with the bundled preview. Other remote images are blocked. Production prototype URLs are unchanged.",
+  "fontNote": "Browser fallback may differ from the target app; no font files are included."
+}
