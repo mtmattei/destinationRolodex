@@ -2,7 +2,8 @@
 
 Verdict: **Complete with gaps**
 Safe to show (desktop): browse by wheel/drag/keys/dots, both effects, replay and scrub, Look around, tour, reduced motion,
-loading/failure/retry, second card. Keep off screen: Android and WebAssembly runtime (not proven), high-DPI, screen readers.
+loading/failure/retry, second card. WebAssembly: browse/tour/effects proven at desktop width in headless Chromium. Keep off
+screen: Android runtime (parked), high-DPI, screen readers.
 
 Runtime proof in this audit comes from the DEBUG harness (deterministic start states + `RenderTargetBitmap` captures,
 JSON statistics, offscreen renders through the production renderer) and the unit tests, because the App MCP was not
@@ -38,7 +39,7 @@ Critical workflows:
 | 7 | Forms | N/A | — | 0 | 0 | 0 | No forms; the lab sliders are demo controls (bound two-way, `MainPage.xaml`) |
 | 8 | Authentication | N/A | — | 0 | 0 | 0 | No accounts by design (brief 01: out of scope) |
 | 9 | Responsive/adaptive UI | Complete | R | 0 | 0 | 0 | 1440×1040 and 390×844 captures; lab stacks below 721 px (`{utu:Responsive}`), card radius 23 narrow, scene height clamps |
-| 10 | Platform behavior | Partial | R (desktop) / X | 0 | 2 | 0 | Desktop proven; Android builds (0 warnings) but runtime parked by the user; WebAssembly: see `docs/evidence/wasm` once run |
+| 10 | Platform behavior | Partial | R (desktop, wasm) / X (android) | 0 | 1 | 0 | Desktop proven; WebAssembly renders the runtime effect in Chromium (`docs/evidence/wasm/wasm-desktop-1440x1040.png`); Android builds (0 warnings) but runtime parked by the user |
 | 11 | Failure handling | Complete | R | 0 | 0 | 0 | Decode failure → status + Retry (`--media-fail`), retry invalidates and reloads (`Retry()`); shader compile failure → PlainImage path (`desktop-noshader.png`); no-surface → XAML Image (C) |
 | 12 | Accessibility | Partial | C | 0 | 0 | 2 | Names on every control, single selection surface, polite announcer, 44 px hit regions (dots 28×44); no screen-reader or large-text run |
 | 13 | Performance | Complete | R (desktop) | 0 | 0 | 1 | Loop p50 15.6 ms / p95 16.9 ms with effects (`captures/perf.json`); cache bounded (6 entries, 31.8 MB); Release not profiled |
@@ -50,10 +51,10 @@ Critical workflows:
 
 | Workflow | desktop | android | wasm |
 |---|---|---|---|
-| 1. Browse | R (`--select`, `--steps=1000` → index 4, `desktop-liquid-050.png` rows + copy + photo) | X (parked by user) | X (not yet run) |
-| 2. Compare effects | R (`--mode=liquid --seek=0.5`, fixtures both modes/directions, parity report) | X | X |
+| 1. Browse | R (`--select`, `--steps=1000` → index 4, `desktop-liquid-050.png` rows + copy + photo) | X (parked by user) | R (tour advanced to Italy, `wasm-desktop-1440x1040.png`) |
+| 2. Compare effects | R (`--mode=liquid --seek=0.5`, fixtures both modes/directions, parity report) | X | C (effect compiled: status line in the wasm capture) |
 | 3. Look around | R (`desktop-look.png`, `mobile-look.png`; Escape path C) | X | X |
-| 4. Tour | R (`desktop-autoplay-mid.png` ring; pause-on-input C) | X | X |
+| 4. Tour | R (`desktop-autoplay-mid.png` ring; pause-on-input C) | X | R (`wasm-desktop-1440x1040.png`) |
 | 5. Media resilience | R (`desktop-loading.png`, `desktop-failed.png`; Retry C) | X | X |
 | 6. Two cards | R (`desktop-second.png`, `mobile-second.png`) | X | X |
 
@@ -64,7 +65,6 @@ Critical workflows:
 
 ### Majors
 - [Platform behavior] Android runtime not proven - head builds clean - evidence X - user parked Android for now - owner: uno-verify
-- [Platform behavior] WebAssembly runtime not proven at audit time - run `python -I tools/wasm_smoke.py` after `dotnet build -f net10.0-browserwasm` - owner: uno-wasm-pwa
 
 ### Minors
 - [Interactions] Real wheel/drag/keyboard input not driven - `DestinationRolodexCard.xaml.cs` input handlers - evidence C - logic covered by controller tests - owner: uno-verify (App MCP, rooted session)
@@ -76,7 +76,7 @@ Critical workflows:
 
 ## Not checked (X)
 - Android runtime - parked by the user - `dotnet build -f net10.0-android -t:Run` with the `chefs36` AVD.
-- WebAssembly runtime - build was pending at audit time - `tools/wasm_smoke.py`.
+- WebAssembly at 390×844 - Debug payload still on the splash after the smoke's wait - rerun `tools/wasm_smoke.py` with a longer wait or a Release build.
 - High-DPI (150 %/200 %) - captures at 100 % only - rerun the matrix on a scaled display.
 - Hidden-window behaviour (A19) - `XamlRoot.IsHostVisible` gating read in code - minimise the window during autoplay and check no advance.
 - Escape focus return, retry button activation, Play while focused - need pointer/keyboard injection - App MCP in a rooted session.
@@ -88,4 +88,4 @@ Critical workflows:
 ## Unresolved Questions
 - N/A rows: Navigation (single page), Forms (none), Authentication (out of scope) - confirm these stay out of the component.
 - Derived workflow 6 (two independent cards) is from the kickoff's acceptance text, not a brief - confirm it is a demo requirement.
-- Android (user-parked) and WebAssembly runtime remain X on supported heads.
+- Android runtime (user-parked) remains X; WebAssembly Look around / media failure / two cards not driven in the browser.

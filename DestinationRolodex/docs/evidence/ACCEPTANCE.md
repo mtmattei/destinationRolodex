@@ -10,8 +10,10 @@ Evidence folders: `fixtures/` (raw photo-layer frames from the real renderer, CP
 composites and `report.json` with mean |diff|), `captures/` (full-card captures through the DEBUG harness,
 `RenderTargetBitmap` of the page root, with per-run logs and JSON statistics).
 
-Only the desktop head was executed in this session. Android and WebAssembly compile status is recorded at the end; their
-runtime rows are **untested**. WinAppSDK and iOS/macOS were not scaffolded (SPEC.md).
+Desktop was executed through the harness; WebAssembly was executed in headless Chromium (`wasm/`, `tools/wasm_smoke.py`,
+Debug build served by dotnet-serve): the runtime effect compiles and renders on the browser Skia backend and the tour
+advances. Android builds (0 warnings) and its runtime is parked at the user's request. WinAppSDK and iOS/macOS were not
+scaffolded (SPEC.md).
 
 | ID | Test | Result | Evidence |
 | --- | --- | --- | --- |
@@ -41,7 +43,7 @@ runtime rows are **untested**. WinAppSDK and iOS/macOS were not scaffolded (SPEC
 | A24 | Offline assets | PASS | Six originals packaged under `Assets/Destinations` (ids ph, jp, it, no, is, nz; 1400×1050 / 1400×933 / 1280×853); loaded through `ms-appx`; no network path exists in the app. |
 | A25 | Multiple instances | PASS | `captures/desktop-second.png`: card 2 (Liquid Warp, index 3, paused) beside card 1 (Morph Blend, index 0, playing); every controller, cache, surface and renderer is per instance (no statics except the SkSL source). |
 | A26 | Resources/performance | PASS (desktop) | Effect compiled once per card; one short-lived `SKShader` per frame; decode on the thread pool; cache budget 96 MB with pinning and deferred disposal; 1,000 steps: 6 entries, 31.8 MB, working set 450 MB; `RenderOverride` p95 0.056 ms (command recording; GPU work is asynchronous); loop p95 17.3 ms. Release configuration not profiled. |
-| A27 | Platform evidence | PASS for desktop; others labelled | Desktop: Windows 11 Pro 10.0.26200, Win32 host, Skia/OpenGL, Debug. Android and WebAssembly: build status below, runtime untested. WinAppSDK, iOS, macOS: not built. |
+| A27 | Platform evidence | PASS for desktop and WebAssembly (1440×1040); others labelled | Desktop: Windows 11 Pro 10.0.26200, Win32 host, Skia/OpenGL, Debug. WebAssembly: Chromium headless (SwiftShader), Debug, `wasm/wasm-desktop-1440x1040.png`, no page errors (console shows only devserver websocket refusals). Android: builds, runtime parked. WinAppSDK, iOS, macOS: not built. |
 | A28 | Final parity proof | PASS | Fixed-progress captures for both modes and both directions (`fixtures/fixed/*`), browser side-by-sides (`browser-reference/compare-*.png`), playback frame sequences (`fixtures/frames/*`, 37 frames each) assembled into `recordings/*.mp4`. |
 
 ## Performance
