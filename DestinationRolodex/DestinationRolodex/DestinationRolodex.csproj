@@ -3,6 +3,7 @@
     <TargetFrameworks>net10.0-android;net10.0-browserwasm;net10.0-desktop;net10.0</TargetFrameworks>
 
     <OutputType>Exe</OutputType>
+    <WarningsAsErrors>$(WarningsAsErrors);Uno0001</WarningsAsErrors>
     <UnoSingleProject>true</UnoSingleProject>
 
     <!-- Display name -->
@@ -26,6 +27,7 @@
       Toolkit;
       Mvvm;
       SkiaRenderer;
+      Skia;
     </UnoFeatures>
   </PropertyGroup>
 

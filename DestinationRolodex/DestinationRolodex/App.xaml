@@ -9,10 +9,9 @@
         <!-- Load WinUI resources -->
         <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
         <utus:SimpleToolkitTheme xmlns:utus="using:Uno.Toolkit.UI.Simple" />
+        <!-- Destination Rolodex card tokens, fonts and icons (theme-invariant: ink over photography) -->
+        <ResourceDictionary Source="ms-appx:///Styles/DestinationRolodexResources.xaml" />
       </ResourceDictionary.MergedDictionaries>
-
-      <!-- Add resources here -->
-
     </ResourceDictionary>
   </Application.Resources>
 

@@ -1,0 +1,45 @@
+<UserControl x:Class="DestinationRolodex.Controls.CountryPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             IsTabStop="True"
+             UseSystemFocusVisuals="False"
+             Height="300"
+             HorizontalAlignment="Stretch"
+             AutomationProperties.Name="Choose a country">
+  <!-- Nine recycled rows around a continuous position. Rows are presentation only (AccessibilityView Raw);
+       the control itself is the single selection surface and announces the settled value. -->
+  <Grid x:Name="Window" Background="Transparent">
+    <Grid.Clip>
+      <RectangleGeometry x:Name="WindowClip" Rect="0,0,480,300" />
+    </Grid.Clip>
+    <Grid x:Name="Rows" Margin="24,0" IsHitTestVisible="True">
+      <StackPanel x:Name="Row0" Style="{StaticResource PickerRowStyle}" />
+      <StackPanel x:Name="Row1" Style="{StaticResource PickerRowStyle}" />
+      <StackPanel x:Name="Row2" Style="{StaticResource PickerRowStyle}" />
+      <StackPanel x:Name="Row3" Style="{StaticResource PickerRowStyle}" />
+      <StackPanel x:Name="Row4" Style="{StaticResource PickerRowStyle}" />
+      <StackPanel x:Name="Row5" Style="{StaticResource PickerRowStyle}" />
+      <StackPanel x:Name="Row6" Style="{StaticResource PickerRowStyle}" />
+      <StackPanel x:Name="Row7" Style="{StaticResource PickerRowStyle}" />
+      <StackPanel x:Name="Row8" Style="{StaticResource PickerRowStyle}" />
+    </Grid>
+    <!-- Active-selection marks -->
+    <Grid x:Name="MarkerLeft" Width="17" Height="17" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0" IsHitTestVisible="False">
+      <Ellipse Fill="{StaticResource RolodexMarkerHaloBrushFixed}" />
+      <Ellipse x:Name="MarkerDot" Width="7" Height="7" Fill="{StaticResource RolodexAccentBrushFixed}" />
+    </Grid>
+    <Border x:Name="MarkerRight" Width="12" Height="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,19,0" Background="{StaticResource RolodexMarkerLineBrushFixed}" IsHitTestVisible="False" />
+    <Border x:Name="FocusRing" Margin="13,106" BorderThickness="1" BorderBrush="{StaticResource RolodexFocusRingBrushFixed}" CornerRadius="8" Visibility="Collapsed" IsHitTestVisible="False" />
+  </Grid>
+  <UserControl.Resources>
+    <Style x:Key="PickerRowStyle" TargetType="StackPanel">
+      <Setter Property="Orientation" Value="Horizontal" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Height" Value="70" />
+      <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+      <Setter Property="IsHitTestVisible" Value="True" />
+      <Setter Property="AutomationProperties.AccessibilityView" Value="Raw" />
+    </Style>
+  </UserControl.Resources>
+</UserControl>
