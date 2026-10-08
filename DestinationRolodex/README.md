@@ -4,7 +4,7 @@ A reusable destination card for Uno Platform, revision 2 "Living Postcard": one 
 behind an infinite country list, an integrated serif caption and quiet overlaid controls. One continuous picker
 position drives the rows, the photo effect between the adjacent pair (**Morph Blend** or **Liquid Warp**, runtime SkSL
 on an `SKCanvasElement`), the geographic globe, the photo-filled moving letters, the caption treatment and the material
-colors. Pointer parallax, Look around (constrained pan/zoom/tilt), an explicit tour (starts paused), loading/failure/retry,
+colors. Pointer parallax, Look around (constrained pan/zoom/tilt, entered through `ViewMode`; no in-card button), an explicit tour (starts paused), loading/failure/retry,
 reduced motion. Built from the briefs in the parent folder (`../briefs`, revision 2 brief
 `destination-rolodex-uno-living-postcard-brief.md`).
 

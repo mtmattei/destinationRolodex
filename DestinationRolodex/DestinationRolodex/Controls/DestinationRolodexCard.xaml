@@ -72,12 +72,8 @@
               </TextBlock>
             </StackPanel>
 
-            <!-- Scene footer: hint | camera | Look around, kept above the caption -->
-            <Grid x:Name="SceneFooter" VerticalAlignment="Bottom" Margin="24,0,18,180" ColumnSpacing="8">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-              </Grid.ColumnDefinitions>
+            <!-- Scene footer: hint | camera controls, kept above the caption -->
+            <Grid x:Name="SceneFooter" VerticalAlignment="Bottom" Margin="24,0,18,180">
               <StackPanel x:Name="GestureHint" Orientation="Horizontal" Spacing="7" VerticalAlignment="Center" Opacity="0.82" IsHitTestVisible="False">
                 <Viewbox Width="15" Height="15"><Path Style="{StaticResource RolodexIconScroll}" /></Viewbox>
                 <StackPanel x:Name="HintText" Orientation="Horizontal" VerticalAlignment="Center" />
@@ -97,15 +93,6 @@
                   </Button>
                 </StackPanel>
               </Border>
-              <Button x:Name="LookButton" Grid.Column="1" Style="{StaticResource RolodexBareButton}" MinHeight="44" Click="OnLookClick" AutomationProperties.Name="Explore this photo">
-                <Border MinHeight="40" Padding="13,0" CornerRadius="20" BorderThickness="1" BorderBrush="{StaticResource PostcardCircleBorderBrushFixed}" Background="{StaticResource PostcardCircleFillBrushFixed}">
-                  <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
-                    <Viewbox x:Name="OrbitGlyph" Width="18" Height="18"><Path Style="{StaticResource RolodexIconOrbit}" /></Viewbox>
-                    <Viewbox x:Name="BackGlyph" Width="16" Height="16" Visibility="Collapsed"><Path Style="{StaticResource RolodexIconBack}" /></Viewbox>
-                    <TextBlock x:Name="LookLabel" Text="Look around" FontFamily="{StaticResource RolodexFontMedium}" FontSize="{StaticResource RolodexLookToggleFontSize}" Foreground="{StaticResource RolodexSceneTextBrushFixed}" VerticalAlignment="Center" />
-                  </StackPanel>
-                </Border>
-              </Button>
             </Grid>
 
             <!-- Integrated caption inside the photograph -->

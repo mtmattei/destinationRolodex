@@ -9,7 +9,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <!-- Living Postcard (revision 2) palette: page, print rim, type -->
-  <Color x:Key="PostcardPageColorFixed">#FFF4F1EB</Color>
+  <Color x:Key="PostcardPageColorFixed">#FFE6E8EC</Color>
   <Color x:Key="PostcardRimColorFixed">#FFEBE6DC</Color>
   <Color x:Key="PostcardCountryColorFixed">#FFFFFDF6</Color>
   <Color x:Key="PostcardCaptionColorFixed">#FFFFF8EB</Color>

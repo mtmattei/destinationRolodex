@@ -27,7 +27,7 @@ graphs the app actually runs as. When this file and a brief disagree, the brief 
 | Procedural photo morph (Morph Blend) | implemented | SkSL port of `morph()` on `SKCanvasElement` |
 | Refractive reveal (Liquid Warp) | implemented | SkSL port of `liquid()` |
 | Infinite looping picker, nine recycled rows | implemented | `CountryPicker` control, `CircularMath` |
-| Pointer parallax + Look around pan/zoom/tilt | implemented | `CameraController`, matrix in renderer |
+| Pointer parallax + Look around pan/zoom/tilt | implemented (API only) | `CameraController`, matrix in renderer; the in-card Look around button was removed 2026-10-08 at the user's request, `ViewMode = Look` stays reachable from code and the `--look` harness switch |
 | Tour autoplay with progress ring | implemented | frame loop + dashed `Ellipse` stroke |
 | Loading / failure / retry | implemented | status pill + Retry; `--media-fail`/`--media-delay` prove it |
 | Reduced motion | implemented | DP + demo toggle; no OS hook on Skia desktop |
@@ -70,7 +70,7 @@ MainPage (demo)                                  DestinationDemoViewModel (MVVM)
 │  │  │  ├─ Motion badge · Media status pill (+Retry)
 │  │  │  ├─ CountryPicker (9 rows, markers, focus ring, LiveSetting status)
 │  │  │  ├─ Look title · Photo credit link
-│  │  │  └─ Footer: hint | camera controls | Look around / Back
+│  │  │  └─ Footer: hint | camera controls (Look mode via ViewMode only; no button)
 │  │  └─ Detail: pin location · REGION · description · dots(6) · prev/next
 │  ├─ Under card: instructions · "About the photos" → ContentDialog !
 │  └─ DestinationRolodexCard #2 (toggle; LiquidWarp, independent)

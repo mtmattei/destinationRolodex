@@ -908,10 +908,6 @@ public sealed partial class DestinationRolodexCard : UserControl
         Picker.IsInert = look;
         Scene.IsTabStop = look;
         AutomationProperties.SetName(Scene, look ? "Explore destination photo. Arrow keys pan; plus and minus zoom; Escape returns to countries." : string.Empty);
-        AutomationProperties.SetName(LookButton, look ? "Back to list" : "Explore this photo");
-        LookLabel.Text = look ? "Back to list" : "Look around";
-        OrbitGlyph.Visibility = look ? Visibility.Collapsed : Visibility.Visible;
-        BackGlyph.Visibility = look ? Visibility.Visible : Visibility.Collapsed;
         CameraControls.Visibility = look ? Visibility.Visible : Visibility.Collapsed;
         GestureHint.Visibility = look ? Visibility.Collapsed : Visibility.Visible;
         CreditLink.Visibility = look ? Visibility.Visible : Visibility.Collapsed;
