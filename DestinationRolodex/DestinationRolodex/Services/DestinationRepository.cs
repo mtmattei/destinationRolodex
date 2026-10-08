@@ -50,7 +50,8 @@ public static class DestinationRepository
                 string.IsNullOrWhiteSpace(media.Alt) ? $"{d.Location ?? d.Country}, {d.Country}" : media.Alt,
                 media.Credit ?? string.Empty,
                 Uri.TryCreate(media.Source, UriKind.Absolute, out var source) ? source : null,
-                IsHexColor(d.Color) ? d.Color! : "#244e51"));
+                IsHexColor(d.Color) ? d.Color! : "#244e51",
+                d.Geo is { Lat: { } lat, Lon: { } lon } && new GeoPoint(lat, lon).IsValid ? new GeoPoint(lat, lon) : null));
         }
 
         return result;
@@ -69,6 +70,13 @@ internal sealed class DestinationDto
     public string? Color { get; set; }
     public string? Description { get; set; }
     public MediaDto? Media { get; set; }
+    public GeoDto? Geo { get; set; }
+}
+
+internal sealed class GeoDto
+{
+    public double? Lat { get; set; }
+    public double? Lon { get; set; }
 }
 
 internal sealed class MediaDto

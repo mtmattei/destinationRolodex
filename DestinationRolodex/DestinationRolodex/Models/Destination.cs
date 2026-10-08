@@ -69,6 +69,12 @@ public readonly record struct FocalPoint
     }
 }
 
+/// <summary>Featured-place coordinates in degrees (the place in the photograph, not a country centroid).</summary>
+public readonly record struct GeoPoint(double Latitude, double Longitude)
+{
+    public bool IsValid => double.IsFinite(Latitude) && double.IsFinite(Longitude) && Math.Abs(Latitude) <= 90 && Math.Abs(Longitude) <= 180;
+}
+
 /// <summary>One browsable destination. Immutable; the card never mutates it.</summary>
 public sealed record Destination(
     string Id,
@@ -81,7 +87,8 @@ public sealed record Destination(
     string ImageDescription,
     string PhotoCredit,
     Uri? PhotoSource,
-    string FallbackColor);
+    string FallbackColor,
+    GeoPoint? Geo = null);
 
 public readonly record struct TransitionSettings
 {

@@ -70,6 +70,7 @@ public sealed partial class MainPage : Page
         if (h.Viewport is { } vp) { PageRoot.Width = vp.Width; PageRoot.Height = vp.Height; PageRoot.HorizontalAlignment = HorizontalAlignment.Left; PageRoot.VerticalAlignment = VerticalAlignment.Top; }
         if (h.ReducedMotion) ViewModel.IsReducedMotion = true;
         if (h.Mode == "liquid") ViewModel.Choose(PhotoTransitionKind.LiquidWarp, replay: false);
+        if (h.Crossfade) ViewModel.IsDiagnosticCrossfade = true;
         if (h.SecondCard) ViewModel.ShowSecondCard = true;
 #endif
         ViewModel.Destinations = catalog;
@@ -102,12 +103,17 @@ public sealed partial class MainPage : Page
 
     private void OnMorphChecked(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.TransitionKind != PhotoTransitionKind.MorphBlend) ViewModel.Choose(PhotoTransitionKind.MorphBlend);
+        if (ViewModel.TransitionKind != PhotoTransitionKind.MorphBlend || ViewModel.IsDiagnosticCrossfade) ViewModel.Choose(PhotoTransitionKind.MorphBlend);
     }
 
     private void OnLiquidChecked(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.TransitionKind != PhotoTransitionKind.LiquidWarp) ViewModel.Choose(PhotoTransitionKind.LiquidWarp);
+        if (ViewModel.TransitionKind != PhotoTransitionKind.LiquidWarp || ViewModel.IsDiagnosticCrossfade) ViewModel.Choose(PhotoTransitionKind.LiquidWarp);
+    }
+
+    private void OnCrossfadeChecked(object sender, RoutedEventArgs e)
+    {
+        if (!ViewModel.IsDiagnosticCrossfade) ViewModel.ChooseDiagnosticCrossfade();
     }
 
     private void OnPageKeyDown(object sender, KeyRoutedEventArgs e)
@@ -179,6 +185,7 @@ public sealed partial class MainPage : Page
 
         if (h.AutoPlay) Card.Play();
         if (h.Look) Card.ViewMode = CardViewMode.Look;
+        if (h.Position is { } q) Card.HoldPositionForDiagnostics(q);
         if (h.Seek is { } p) await Card.SeekTransitionAsync(p);
         if (h.Replay) await Card.ReplayTransitionAsync();
 

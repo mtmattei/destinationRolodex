@@ -332,3 +332,69 @@ public class RendererMathTests
         oy.Should().Be(0);
     }
 }
+
+public class SceneFrameTests
+{
+    [TestCase(0.0, 0, 1, 0, 0.0)]
+    [TestCase(0.25, 0, 1, 0, 0.25)]
+    [TestCase(0.5, 0, 1, 1, 0.5)]
+    [TestCase(0.75, 0, 1, 1, 0.75)]
+    [TestCase(-0.25, 5, 0, 0, 0.75)]
+    [TestCase(-1.5, 4, 5, 5, 0.5)]
+    [TestCase(6.0, 0, 1, 0, 0.0)]
+    [TestCase(6001.25, 1, 2, 1, 0.25)]
+    public void Sample_uses_the_adjacent_ordered_pair_and_js_rounding(double q, int from, int to, int selected, double p)
+    {
+        var f = SceneFrame.Sample(q, 6);
+        f.FromIndex.Should().Be(from);
+        f.ToIndex.Should().Be(to);
+        f.Selected.Should().Be(selected);
+        f.P.Should().BeApproximately(p, 1e-9);
+    }
+
+    [Test]
+    public void Travel_and_treatments_are_zero_at_arrival_and_peak_mid_flight()
+    {
+        SceneFrame.Sample(3, 6).Travel.Should().BeApproximately(0, 1e-9);
+        SceneFrame.Sample(3.5, 6).Travel.Should().BeApproximately(1, 1e-9);
+        var mid = SceneFrame.Sample(3.5, 6);
+        mid.PhotoInTypeOpacity(0.5).Should().BeApproximately(.6 * (1 - .36), 1e-9);
+        mid.PhotoInTypeOpacity(2).Should().Be(0);
+        mid.CaptionOpacity.Should().BeApproximately(.83, 1e-9);
+        mid.ArrivalScale.Should().BeApproximately(1.012, 1e-9);
+        var rest = SceneFrame.Sample(4, 6);
+        rest.IsAtRest.Should().BeTrue();
+        rest.PhotoInTypeOpacity(0).Should().Be(0);
+        rest.CaptionOpacity.Should().Be(1);
+    }
+
+    [Test]
+    public void Reversing_within_the_pair_rewinds_without_swapping_endpoints()
+    {
+        var forward = SceneFrame.Sample(2.7, 6);
+        var back = SceneFrame.Sample(2.3, 6);
+        (forward.FromIndex, forward.ToIndex).Should().Be((back.FromIndex, back.ToIndex));
+        back.P.Should().BeLessThan(forward.P);
+    }
+
+    [Test]
+    public void Empty_catalog_never_divides_by_zero()
+    {
+        var f = SceneFrame.Sample(12.3, 0);
+        f.Count.Should().Be(0);
+        f.Selected.Should().Be(-1);
+    }
+
+    [Test]
+    public void Material_colors_follow_the_authored_mixes()
+    {
+        var a = new SkiaSharp.SKColor(0x16, 0x6A, 0x73);
+        var b = new SkiaSharp.SKColor(0x60, 0x7F, 0x98);
+        var m = MaterialColors.From(a, b, 0);
+        m.Pigment.Should().Be(a);
+        m.Ink.Red.Should().Be((byte)Math.Round(24 + (0x16 - 24) * .15));
+        m.Accent.Red.Should().Be((byte)Math.Round(255 + (0x16 - 255) * .20));
+        MaterialColors.From(a, b, 1).Pigment.Should().Be(b);
+        MaterialColors.From(a, b, .5).Pigment.Red.Should().Be((byte)Math.Round((0x16 + 0x60) / 2.0));
+    }
+}

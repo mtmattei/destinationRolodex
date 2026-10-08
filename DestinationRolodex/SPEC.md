@@ -117,3 +117,38 @@ Stages 0–7 of `briefs/06-implementation-plan.md`, each committed. Evidence und
 - Final duration/intensity remain the inherited 1200 ms / 0.60 (D06).
 - Norway and Iceland source pages are still unverified (manifest `sourcePageVerified: false`).
 - App MCP verification in a rooted session remains a release gate; this session verified through DEBUG harness captures.
+
+---
+
+# Revision 2 · Living Postcard (2026-10-08)
+
+Source: `../briefs/destination-rolodex-uno-living-postcard-brief.md` and its kickoff. The brief's visual authority
+(`reference/destination-rolodex-living-postcard.html` and the source zip with `rolodex.js`, `globe.js`, the coastline
+bitmask and `docs/`) is **not present** in this kit; the implementation follows the brief's measurements, formulas and
+tables, and every place where only the source could settle a detail is listed below as an assumption.
+
+## Decisions
+
+| Decision | Value | Reason / tradeoff |
+| --- | --- | --- |
+| Renderer | Keep the native path: XAML text/controls over `SKCanvasElement` (photo effects, camera), a second translucent `SKCanvasElement` above the rows for photo-in-type, and a small `GlobeElement`. WebView2 not adopted. | The native spike already proved both effects, clipping and the surface; a WebView would re-host the whole card and lose native semantics. Recorded as the renderer decision; the brief allowed either. |
+| Shared state | `SceneFrame.Sample(q, N)` (low, p, from/to, selected, travel = sin πp) drives rows, shader uniforms (ordered pair low→low+1, fixed direction +1, progress p), globe slerp, photo-in-type opacity, caption treatment, material colors and arrival camera. Browsing no longer starts a timed transition on selection change. | Brief §3. The timed `TransitionCoordinator` stays only for the lab's replay/seek (preview flag) and the settled media identity. |
+| Spring | 115 / 21, substeps 1/120 s, catch-up bounded at 0.5 s, monotonic clock. | Brief §4 motion table. |
+| Composition | One photo behind everything, warm rim 6 (`#EBE6DC`), outer radius 30 (27 narrow), inner radius = outer − rim, feathered scrim strongest behind the caption, inner highlight, destination-tinted shadow; no counter, no in-photo badge; tour starts paused; no drift. | Brief §2 / change table. |
+| Type | Country: Inter SemiBold `clamp(34, .1235 w, 61)`, tracking −0.055 em (per-glyph). Place: Source Serif 4 Regular 23 / 20 compact (OFL, bundled; Georgia is not on every head). Description Inter 12 / 1.7, `#EEEADE`. | Brief §2; Georgia substitution recorded. |
+| Globe | Orthographic, Natural Earth 110m land mask regenerated (`Assets/Globe/landmask.bin`, 1-bit 512×256), 96 px buffer shown at 27/25, slerp on unit vectors with deterministic antipodal path, neutral unpinned globe when coordinates are missing. | Brief §5; the bundled bitmask was unavailable, provenance in `Assets/Globe/NATURAL_EARTH.md`. |
+| Material | pigment = lerp(color_from, color_to, p); ink = .85 neutral(24,25,23) + .15 pigment; accent = .80 warm(255,247,224) + .20 pigment; shadow tint = .35 pigment over neutral. Accent paints the selected dot, marker and globe pin; ink is unused on the dark scrim (kept for the shadow and future light surfaces). | Brief §4; where the HTML applies "caption ink" is an assumption. |
+| Photo-in-type | Per visible row, its own photo cover-cropped to the scene, drawn through the row's glyphs (Skia text with the same Inter face, positioned from the XAML glyph bounds), alpha = travel × .60 × max(0, 1 − 0.72·|d|), above the solid XAML text. | Brief §4; mask cached per row/text/size. |
+| Lab | Morph Blend / Liquid Warp, strength, replay duration, replay, scrub, and a diagnostic **Original Crossfade** (lab-only `DiagnosticCrossfade`, never part of `TransitionKind`). | Brief §8. |
+
+## Assumptions (would be settled by the missing source)
+
+- Scrim gradient stops, inner highlight strength and shadow blur radii are chosen to read like the brief's description.
+- Caption ink placement; pointer-lighting highlight size; dot/button exact fills.
+- `_syncScrollScene` behaviour when a pair photo is not yet decoded: the ready endpoint is shown static at the current fraction's nearest side, with the status pill after 1.1 s.
+- Whether the demo header keeps "6 destinations": kept.
+
+## Unresolved Questions (added)
+
+- Provide `reference/destination-rolodex-living-postcard.html` and `destination-rolodex-living-postcard-source.zip` to replace the assumptions above and to run a browser parity pass against revision 05.
+- Fonts: Source Serif 4 stands in for Georgia; confirm or supply the intended serif.

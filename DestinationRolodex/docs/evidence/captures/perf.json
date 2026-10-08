@@ -1,1 +1,1 @@
-{ "seconds": 12, "loopFrames": 777, "loopP50Ms": 15.54, "loopP95Ms": 17.27, "loopMaxMs": 47.69, "renderP50Ms": 0.032, "renderP95Ms": 0.056, "renderMaxMs": 0.138, "rendererStatus": "Shader", "workingSetBytes": 365756416, "managedBytes": 39567352 }
+{ "seconds": 12, "loopFrames": 791, "loopP50Ms": 15.59, "loopP95Ms": 16.55, "loopMaxMs": 25.43, "renderP50Ms": 0.052, "renderP95Ms": 0.096, "renderMaxMs": 0.271, "rendererStatus": "Shader", "workingSetBytes": 416231424, "managedBytes": 33039176 }

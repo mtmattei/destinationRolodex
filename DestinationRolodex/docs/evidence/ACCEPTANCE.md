@@ -63,3 +63,35 @@ Interval spikes above 100 ms appear only in the 1,000-step run (first decodes un
 - Per-glyph tracking loses pair kerning in country labels.
 - Hit regions: dots are 28×44 (row width), everything else ≥ 44×44.
 - Loading preview crop not shipped (rights); a colour surface with a status pill is used instead.
+
+---
+
+# Revision 2 · Living Postcard · LP01–LP20
+
+Run: 2026-10-08 · `net10.0-desktop` Debug, Skia/OpenGL on Windows 11 · same stack as above. Evidence in
+`captures/` (revision 2 matrix; revision 1 captures archived under `captures-r1/`), `fixtures/` (raw frames, unchanged
+shader), `wasm/` (revision 1 run; rerun pending). The brief's HTML/zip visual authority was not available, so parity is
+against the brief's measurements and formulas, not against revision 05 pixels (see SPEC.md "Revision 2").
+
+| ID | Required evidence | Result | Evidence |
+| --- | --- | --- | --- |
+| LP01 | One continuous image behind caption, controls and feathered scrim; no white panel | PASS | `captures/desktop-rest.png`, `captures/mobile-rest.png` |
+| LP02 | Warm rim, type hierarchy (sans country / serif place), quiet dots, circular buttons; no counter, no in-photo badge | PASS | `captures/desktop-rest.png` (rim 6 `#EBE6DC`, radius 30; Source Serif 4 caption; 4 px dots, 21×3 selected; 40 px circles) |
+| LP03 | Slow drag at 25/50/75 % shows photo, names, globe and colors sampling one frame | PASS (position-driven, held) | `captures/desktop-position-025/050/075.png` via `--position`: effect progress = p, rows posed from q, globe slerped, accent/shadow mixed, caption dimmed by travel |
+| LP04 | Reverse mid-transition without new animation, pair swap or liquid-origin jump | PASS (code + test) | `SceneFrame.Sample` keeps the ordered pair low→low+1 with direction +1; `Reversing_within_the_pair_rewinds_without_swapping_endpoints`; `captures/desktop-position-150.png` (q = 1.5, Liquid) |
+| LP05 | Both effects produce genuine displacement/refraction with clean endpoints, both directions | PASS | `fixtures/report.json` (endpoints byte-equal, midpoint ≠ crossfade), `browser-reference/report.json` parity |
+| LP06 | At rest: type solid, photo fill zero, caption opaque, correct sharp image | PASS | `captures/desktop-rest.png`; `Travel_and_treatments_are_zero_at_arrival_and_peak_mid_flight` |
+| LP07 | Globe points to each featured place; date line, antipodal, missing coordinates correct | PASS (unit) / PASS (visual pin) | `GlobeTests` (date line, antipodal, poles, invalid); globe visible top-left in every capture; neutral unpinned globe when `Geo` is null (`PresentFrame`) |
+| LP08 | Infinite navigation both ways incl. negative and large positions, bounded rows | PASS | `SceneFrameTests` (−0.25, −1.5, 6001.25), `Thousand_steps_keep_position_bounded_and_land_correctly`, `captures/desktop-steps.png.json` |
+| LP09 | Wheel, touch, mouse, keyboard, dots, arrows select correctly without unwanted capture | PARTIAL | controller tests + harness `--select`; live input still needs the App MCP (rooted session) |
+| LP10 | Look around pan/zoom/reset/return; hidden picker intercepts nothing | PASS | `captures/desktop-look.png`, `mobile-look.png`; `Picker.IsInert` removes focus and hit testing |
+| LP11 | Tour starts paused; manual navigation pauses it; no idle loops | PASS | `IsAutoPlayEnabled` default false, demo page no longer enables it; `captures/desktop-rest.png` shows Play; drift removed (`_camera.IsDrifting = false`); loop stops when idle (`Tick`) |
+| LP12 | Replay and scrub reuse the intended pair; browsing exits preview; preview events flagged | PASS | `captures/desktop-liquid-050.png` (lab seek); `TransitionEventArgs.IsPreview`; `ExitPreview()` on every manual input |
+| LP13 | Rapid selection and delayed loads never install stale photos | PASS | frames read `cache.Peek` for the current pair every tick (`PresentFrame`); late decodes only populate the cache; `captures/desktop-loading.png` shows the destination's own colour + status, never an old photo under a new place |
+| LP14 | Reduced motion at startup and mid-transition clears transient treatments | PASS | `captures/desktop-reduced.png`; `OnReducedMotionChanged` snaps entrance/lift/light, cancels previews, snaps q; photo-in-type and travel treatments gated by the flag |
+| LP15 | High contrast, screen reader, focus, enlarged text, labels | PARTIAL | names on every control, one semantic picker + polite announcer, keyboard focus ring; high-contrast surfaces and a screen-reader pass not run |
+| LP16 | 320/390/768/1440 widths, long captions, short windows without overlap | PASS (captures) | `captures/narrow-rest.png` (320), `mobile-rest.png` (390), `tablet-rest.png` (768), `desktop-rest.png` (1440); scene height = max(clamp, caption + 400) |
+| LP17 | Missing photo, retry, unavailable shader, empty/single catalog explicit and usable | PASS | `captures/desktop-failed.png` (Retry), `desktop-noshader.png`, `desktop-empty.png`, `desktop-single.png`; device/context recreation not exercised |
+| LP18 | Six final photos offline with preserved metadata | PASS | packaged originals, credits/sources/focal/geo/pigments in `Assets/Data/destinations.json` |
+| LP19 | Two simultaneous cards independent; bounded resources over repeated cycles | PASS | `captures/desktop-second.png`, `mobile-second.png`; `desktop-steps.png.json` (1,000 steps, 6 cached, 0 retired) |
+| LP20 | Real-device startup, frame presentation, memory, idle measured | PARTIAL (desktop only) | `captures/perf.json` (12 s tour), `desktop-steps.png.json`; emulator/device runs not performed; idle: loop timer stops when nothing moves |

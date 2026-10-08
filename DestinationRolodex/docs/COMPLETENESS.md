@@ -1,9 +1,15 @@
-# Completeness audit: Destination Rolodex (2026-10-07, Uno.Sdk 6.7.30, heads: net10.0-desktop, net10.0-android, net10.0-browserwasm)
+# Completeness audit: Destination Rolodex · Living Postcard revision 2 (2026-10-08, Uno.Sdk 6.7.30, heads: net10.0-desktop, net10.0-android, net10.0-browserwasm)
 
 Verdict: **Complete with gaps**
-Safe to show (desktop): browse by wheel/drag/keys/dots, both effects, replay and scrub, Look around, tour, reduced motion,
-loading/failure/retry, second card. WebAssembly: browse/tour/effects proven at desktop width in headless Chromium. Keep off
-screen: Android runtime (parked), high-DPI, screen readers.
+Safe to show (desktop): browse by wheel/drag/keys/dots with the position-driven morph/liquid, photo-filled moving type,
+globe, material colors, Look around, explicit tour, reduced motion, loading/failure/retry, second card, lab replay/scrub and
+the diagnostic crossfade. WebAssembly: revision 1 run only; rerun pending for revision 2. Keep off screen: Android runtime
+(parked), high-DPI, screen readers, and anything the missing revision-05 HTML would have to confirm (scrim/highlight exact look).
+
+Revision 2 changes audited: integrated caption inside the photo (no white panel), warm rim, Skia-drawn country rows with
+photo-in-type, orthographic globe (Natural Earth mask), authored material colors, position-driven transitions (one `SceneFrame`
+per tick; no timed transition on selection), spring 115/21 with 1/120 s substeps, tour paused by default, no idle drift,
+counter and in-photo badge removed, lab-only Original Crossfade. Evidence: `docs/evidence/ACCEPTANCE.md` LP01–LP20.
 
 Runtime proof in this audit comes from the DEBUG harness (deterministic start states + `RenderTargetBitmap` captures,
 JSON statistics, offscreen renders through the production renderer) and the unit tests, because the App MCP was not
@@ -30,10 +36,10 @@ Critical workflows:
 
 | # | Area | Status | Evidence | Blockers | Majors | Minors | Note |
 |---|---|---|---|---|---|---|---|
-| 1 | Screens | Complete | R | 0 | 0 | 0 | `captures/desktop-rest.png`, `mobile-rest.png`; credits dialog built from the catalog (`MainPage.xaml.cs` `OnOpenCredits`, C) |
+| 1 | Screens | Complete | R | 0 | 0 | 0 | `captures/desktop-rest.png`, `mobile-rest.png`, `tablet-rest.png`, `narrow-rest.png`; credits dialog built from the catalog (`MainPage.xaml.cs` `OnOpenCredits`, C) |
 | 2 | Navigation | N/A | — | 0 | 0 | 0 | Single page by design (brief 04); Escape/Back-to-list are in-card view modes (`captures/desktop-look.png`) |
 | 3 | Interactions | Partial | R/C | 0 | 0 | 1 | Programmatic paths proven (`--select`, `--seek`, `--look`, `--steps`); wheel/drag/keyboard logic proven in `ControllerTests.cs` (12 tests) but not through real input |
-| 4 | Logic | Complete | R | 0 | 0 | 0 | Circular math, spring, latest-target queue, camera clamps: 39 unit tests; 1,000-step loop `captures/desktop-steps.png.json` |
+| 4 | Logic | Complete | R | 0 | 0 | 0 | Circular math, scene frame (pair/fraction/travel), spring, lab queue, camera clamps, globe slerp, material mixes: 58 unit tests; 1,000-step loop `captures/desktop-steps.png.json`; `captures/desktop-position-025/050/075.png` |
 | 5 | Data | Complete | R | 0 | 0 | 0 | Packaged catalog + six originals load through `ms-appx` (`captures/*`); duplicate ids throw (`DestinationRepository.Parse`, C) |
 | 6 | States | Complete | R | 0 | 0 | 0 | Loading `desktop-loading.png`, Failed + Retry `desktop-failed.png`, Empty `desktop-empty.png`, Single `desktop-single.png`, Ready everywhere |
 | 7 | Forms | N/A | — | 0 | 0 | 0 | No forms; the lab sliders are demo controls (bound two-way, `MainPage.xaml`) |
@@ -44,7 +50,7 @@ Critical workflows:
 | 12 | Accessibility | Partial | C | 0 | 0 | 2 | Names on every control, single selection surface, polite announcer, 44 px hit regions (dots 28×44); no screen-reader or large-text run |
 | 13 | Performance | Complete | R (desktop) | 0 | 0 | 1 | Loop p50 15.6 ms / p95 16.9 ms with effects (`captures/perf.json`); cache bounded (6 entries, 31.8 MB); Release not profiled |
 | 14 | Security/privacy | Complete | C | 0 | 0 | 0 | No network, no secrets, no storage; external links only through `Launcher.LaunchUriAsync` to credited source pages |
-| 15 | Visual quality | Complete | R | 0 | 0 | 1 | Matches `browser-reference/card-desktop.png`; known deltas: row blur, text shadow, mask fold, kerning (SPEC.md) |
+| 15 | Visual quality | Complete | R | 0 | 0 | 2 | Composition per the revision 2 brief measurements (`captures/*`); the revision-05 HTML was not available for pixel parity; row blur now rendered in Skia; kerning intact (rows shaped in Skia) |
 | 16 | Testing | Partial | R | 0 | 0 | 1 | 39 unit tests green; fixture export + browser parity + capture matrix scripted; no UI-test project |
 
 ## Critical workflows by head
@@ -71,7 +77,8 @@ Critical workflows:
 - [Accessibility] Screen reader, large text and contrast not run - `CountryPicker.xaml`, `DestinationRolodexCard.xaml` - evidence C - owner: winui-xaml
 - [Accessibility] Dot hit regions 28×44 (row width) - `DestinationRolodexCard.xaml.cs` `RebuildIndicators` - evidence C
 - [Performance] Release configuration not profiled - owner: uno-verify
-- [Visual quality] Substituted details (row blur, text shadow, mask fold, kerning) - SPEC.md capability inventory - evidence R (`desktop-rest.png`)
+- [Visual quality] Scrim stops, inner highlight, shadow radii and "caption ink" placement are assumptions until the revision-05 HTML/zip is supplied - SPEC.md "Revision 2 · Assumptions" - evidence R (`desktop-rest.png`)
+- [Visual quality] Country-row hit testing is analytic (rows are Skia-drawn): verify click-to-row on a touch device - `DestinationRolodexCard.HitTestRow` - evidence C
 - [Testing] No UI-test project - owner: uno-app-ui-testing
 
 ## Not checked (X)

@@ -9,8 +9,11 @@ namespace DestinationRolodex.Input;
 /// </summary>
 public sealed class CountryPickerController
 {
-    private const double SpringStiffness = 200;
-    private const double SpringDamping = 27;
+    // Living Postcard reference spring: 115 × (target − q) − 21 × velocity, integrated in substeps of 1/120 s.
+    private const double SpringStiffness = 115;
+    private const double SpringDamping = 21;
+    private const double SubStep = 1d / 120;
+    private const double MaxCatchUpSeconds = .5;
     private const double WheelSnapDelaySeconds = .110;
     private const double TypeAheadTimeoutSeconds = .650;
 
@@ -219,6 +222,16 @@ public sealed class CountryPickerController
         CheckSelection();
     }
 
+    /// <summary>Diagnostics: places the continuous position directly (no spring), raising position and selection updates.</summary>
+    public void SetPositionForDiagnostics(double q)
+    {
+        Position = Target = q;
+        Velocity = 0;
+        _userChange = false;
+        PositionChanged?.Invoke();
+        CheckSelection();
+    }
+
     /// <summary>Leaves preview: rounds to the nearest row and settles there.</summary>
     public void SnapToNearest()
     {
@@ -258,9 +271,15 @@ public sealed class CountryPickerController
             }
             else
             {
-                var acceleration = (Target - Position) * SpringStiffness - Velocity * SpringDamping;
-                Velocity += acceleration * dt;
-                Position += Velocity * dt;
+                var remaining = Math.Min(dt, MaxCatchUpSeconds);
+                while (remaining > 0)
+                {
+                    var h = Math.Min(SubStep, remaining);
+                    var acceleration = (Target - Position) * SpringStiffness - Velocity * SpringDamping;
+                    Velocity += acceleration * h;
+                    Position += Velocity * h;
+                    remaining -= h;
+                }
             }
 
             moving = true;

@@ -19,37 +19,51 @@ namespace DestinationRolodex.Controls;
 // frame loop and Skia invalidation are the control's implementation and have no XAML surface. Hosts bind its
 // dependency properties and events; they never touch this file.
 /// <summary>
-/// Destination Rolodex card: looping country picker over a procedural photo transition (Morph Blend / Liquid Warp),
-/// pointer parallax, Look around, tour autoplay and a white detail panel. Two instances share no state.
+/// Living Postcard: one photograph behind an infinite country list, integrated caption and overlaid controls.
+/// A single continuous picker position drives rows, the photo effect between the adjacent ordered pair, the
+/// geographic globe, photo-in-type, caption treatment, material colors and the arrival camera (brief §3).
+/// Two instances share no state.
 /// </summary>
 public sealed partial class DestinationRolodexCard : UserControl
 {
     private const double MinAutoPlayIntervalMs = 2500;
-    private const double LoadingGraceMs = 250;
+    private const double RowPoolHalf = 4;
 
     private readonly CountryPickerController _picker = new();
     private readonly CameraController _camera = new();
     private readonly TransitionCoordinator _coordinator = new();
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(8) };
     private readonly Stopwatch _clock = Stopwatch.StartNew();
-    private readonly Tween _detailOpacity = new(1);
-    private readonly Tween _detailY = new(0);
     private readonly Tween _pickerOpacity = new(1);
     private readonly Tween _pickerY = new(0);
     private readonly Tween _lookOpacity = new(0);
     private readonly Tween _lookY = new(6);
-    private readonly Tween _readability = new(1);
+    private readonly Tween _scrim = new(1);
+    private readonly Tween _entranceY = new(0);
+    private readonly Tween _entranceScale = new(1);
+    private readonly Tween _hoverLift = new(0);
+    private readonly Tween _pointerLight = new(0);
     private readonly List<Button> _dots = new();
+    private readonly List<Border> _dotBars = new();
     private readonly List<double> _frameIntervals = new();
+    private readonly SolidColorBrush _accentBrush = new(Windows.UI.Color.FromArgb(255, 0xFF, 0xF7, 0xE0));
+    private readonly HashSet<string> _failedIds = new();
+    private readonly Dictionary<(string, float, float), float> _fitCache = new();
 
     private IReadOnlyList<Destination> _data = Array.Empty<Destination>();
+    private SKColor[] _pigments = Array.Empty<SKColor>();
+    private (double X, double Y, double Z)?[] _geo = Array.Empty<(double, double, double)?>();
     private DestinationMediaCache? _cache;
     private PhotoTransitionSurface? _surface;
+    private GlobeElement? _globe;
+    private CardShadowElement? _shadow;
     private Image? _fallbackImage;
     private int _index = -1;
+    private int _settledIndex = -1;
     private int _mediaToken;
     private int _previewTicket;
     private bool _loaded;
+    private bool _entered;
     private bool _visible = true;
     private bool _hostVisible = true;
     private bool _auto;
@@ -57,8 +71,7 @@ public sealed partial class DestinationRolodexCard : UserControl
     private bool _hover;
     private bool _focused;
     private bool _previewing;
-    private bool _suppressTransition;
-    private bool _syncingSelectedIndex;
+    private bool _syncingSelection;
     private double _autoProgress;
     private double? _lastTick;
     private Pointer? _capturedPointer;
@@ -66,11 +79,13 @@ public sealed partial class DestinationRolodexCard : UserControl
     private double _dragPanX, _dragPanY;
     private bool _dragIsLook;
     private (Destination From, Destination To)? _lastPair;
-    private (Destination From, Destination To)? _previewPair;
     private DateTime? _statusDue;
-    private DateTime? _graceDue;
-    private Destination? _pendingDestination;
     private Size _lastViewport;
+    private double _pickerCenterY = 260;
+    private double _rowPitch = 76;
+    private double _countryFontSize = 58;
+    private double _pickerWindow = 300;
+    private SKPoint? _pointerScenePoint;
     private FontFamily? _fontSemiBold, _fontMedium, _fontRegular;
     private Brush? _sceneInk, _regionInk;
 
@@ -78,7 +93,6 @@ public sealed partial class DestinationRolodexCard : UserControl
     {
         InitializeComponent();
         _timer.Tick += (_, _) => Tick();
-        _picker.PositionChanged += () => Picker.Render(_picker.Position);
         _picker.SelectionChanged += OnPickerSelectionChanged;
         _coordinator.Started += t => TransitionStarted?.Invoke(this, new TransitionEventArgs(t.FromDestination, t.ToDestination, t.Settings.Kind, t.Settings.Duration, t.IsPreview, t.Direction));
         _coordinator.Completed += OnTransitionCompleted;
@@ -86,6 +100,7 @@ public sealed partial class DestinationRolodexCard : UserControl
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
         SizeChanged += (_, _) => UpdateLayoutMetrics();
+        Caption.SizeChanged += (_, _) => UpdateLayoutMetrics();
         EffectiveViewportChanged += OnEffectiveViewportChanged;
 
         Scene.PointerWheelChanged += OnSceneWheel;
@@ -96,10 +111,13 @@ public sealed partial class DestinationRolodexCard : UserControl
         Scene.PointerCaptureLost += (s, e) => EndDrag(e, cancelled: true);
         Scene.PointerEntered += OnScenePointerEntered;
         Scene.PointerExited += OnScenePointerExited;
+        CardFrame.PointerEntered += (_, e) => { if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse && !IsReducedMotionEnabled) { _hoverLift.Go(-2, .42); Wake(); } };
+        CardFrame.PointerExited += (_, _) => { _hoverLift.Go(0, .42); Wake(); };
         Root.KeyDown += OnKeyDown;
         Root.GotFocus += (_, _) => { _focused = true; Wake(); };
         Root.LostFocus += (_, _) => { _focused = XamlRoot is { } xr && FocusManager.GetFocusedElement(xr) is DependencyObject d && IsDescendant(d); Wake(); };
-        CreditLink.Click += (_, _) => { if (_index >= 0 && _data[_index].PhotoSource is { } uri) { _ = Windows.System.Launcher.LaunchUriAsync(uri); } };
+        CreditLink.Click += (_, _) => { if (SelectedDestination?.PhotoSource is { } uri) { _ = Windows.System.Launcher.LaunchUriAsync(uri); } };
+        PlayRing.Stroke = _accentBrush;
     }
 
     #region Dependency properties
@@ -110,14 +128,17 @@ public sealed partial class DestinationRolodexCard : UserControl
     public static readonly DependencyProperty SelectedIndexProperty = DependencyProperty.Register(
         nameof(SelectedIndex), typeof(int), typeof(DestinationRolodexCard), new PropertyMetadata(0, (d, e) => ((DestinationRolodexCard)d).OnSelectedIndexChanged((int)e.NewValue)));
 
+    public static readonly DependencyProperty SelectedDestinationIdProperty = DependencyProperty.Register(
+        nameof(SelectedDestinationId), typeof(string), typeof(DestinationRolodexCard), new PropertyMetadata(null, (d, e) => ((DestinationRolodexCard)d).OnSelectedIdChanged(e.NewValue as string)));
+
     public static readonly DependencyProperty TransitionKindProperty = DependencyProperty.Register(
-        nameof(TransitionKind), typeof(PhotoTransitionKind), typeof(DestinationRolodexCard), new PropertyMetadata(PhotoTransitionKind.MorphBlend, (d, _) => ((DestinationRolodexCard)d).UpdateMotionBadge()));
+        nameof(TransitionKind), typeof(PhotoTransitionKind), typeof(DestinationRolodexCard), new PropertyMetadata(PhotoTransitionKind.MorphBlend, (d, _) => ((DestinationRolodexCard)d).Wake()));
 
     public static readonly DependencyProperty TransitionDurationProperty = DependencyProperty.Register(
         nameof(TransitionDuration), typeof(TimeSpan), typeof(DestinationRolodexCard), new PropertyMetadata(TimeSpan.FromMilliseconds(1200)));
 
     public static readonly DependencyProperty TransitionStrengthProperty = DependencyProperty.Register(
-        nameof(TransitionStrength), typeof(double), typeof(DestinationRolodexCard), new PropertyMetadata(.6));
+        nameof(TransitionStrength), typeof(double), typeof(DestinationRolodexCard), new PropertyMetadata(.6, (d, _) => ((DestinationRolodexCard)d).Wake()));
 
     public static readonly DependencyProperty IsAutoPlayEnabledProperty = DependencyProperty.Register(
         nameof(IsAutoPlayEnabled), typeof(bool), typeof(DestinationRolodexCard), new PropertyMetadata(false, (d, e) => ((DestinationRolodexCard)d).OnAutoPlayEnabledChanged((bool)e.NewValue)));
@@ -130,6 +151,9 @@ public sealed partial class DestinationRolodexCard : UserControl
 
     public static readonly DependencyProperty AllowRuntimeEffectProperty = DependencyProperty.Register(
         nameof(AllowRuntimeEffect), typeof(bool), typeof(DestinationRolodexCard), new PropertyMetadata(true));
+
+    public static readonly DependencyProperty DiagnosticCrossfadeProperty = DependencyProperty.Register(
+        nameof(DiagnosticCrossfade), typeof(bool), typeof(DestinationRolodexCard), new PropertyMetadata(false, (d, _) => ((DestinationRolodexCard)d).Wake()));
 
     public static readonly DependencyProperty ViewModeProperty = DependencyProperty.Register(
         nameof(ViewMode), typeof(CardViewMode), typeof(DestinationRolodexCard), new PropertyMetadata(CardViewMode.Browse, (d, e) => ((DestinationRolodexCard)d).ApplyViewMode((CardViewMode)e.NewValue)));
@@ -146,24 +170,28 @@ public sealed partial class DestinationRolodexCard : UserControl
     public static readonly DependencyProperty SceneHeightProperty = DependencyProperty.Register(
         nameof(SceneHeight), typeof(double), typeof(DestinationRolodexCard), new PropertyMetadata(double.NaN, (d, _) => ((DestinationRolodexCard)d).UpdateLayoutMetrics()));
 
-    /// <summary>The ordered catalog. Replacing it invalidates loads and keeps the selection by id when possible.</summary>
+    /// <summary>The ordered catalog (brief: ItemsSource). Replacing it invalidates loads and keeps the selection by id when possible.</summary>
     public IReadOnlyList<Destination>? Destinations { get => (IReadOnlyList<Destination>?)GetValue(DestinationsProperty); set => SetValue(DestinationsProperty, value); }
     public int SelectedIndex { get => (int)GetValue(SelectedIndexProperty); set => SetValue(SelectedIndexProperty, value); }
+    public string? SelectedDestinationId { get => (string?)GetValue(SelectedDestinationIdProperty); set => SetValue(SelectedDestinationIdProperty, value); }
     public PhotoTransitionKind TransitionKind { get => (PhotoTransitionKind)GetValue(TransitionKindProperty); set => SetValue(TransitionKindProperty, value); }
+    /// <summary>Timed replay duration (lab). Browsing is position-driven and ignores it.</summary>
     public TimeSpan TransitionDuration { get => (TimeSpan)GetValue(TransitionDurationProperty); set => SetValue(TransitionDurationProperty, value); }
     public double TransitionStrength { get => (double)GetValue(TransitionStrengthProperty); set => SetValue(TransitionStrengthProperty, value); }
-    /// <summary>Host setting. Starts the tour passively (hover/focus pause it). Off when motion is reduced.</summary>
+    /// <summary>Host setting. The tour starts paused unless the host turns this on; reduced motion keeps it off.</summary>
     public bool IsAutoPlayEnabled { get => (bool)GetValue(IsAutoPlayEnabledProperty); set => SetValue(IsAutoPlayEnabledProperty, value); }
     public TimeSpan AutoPlayInterval { get => (TimeSpan)GetValue(AutoPlayIntervalProperty); set => SetValue(AutoPlayIntervalProperty, value); }
-    /// <summary>OS policy plus application setting: no procedural transition, parallax, drift or default autoplay.</summary>
+    /// <summary>OS policy plus application setting: no entrance, lift, parallax, photo displacement, moving photo fill or animated globe travel.</summary>
     public bool IsReducedMotionEnabled { get => (bool)GetValue(IsReducedMotionEnabledProperty); set => SetValue(IsReducedMotionEnabledProperty, value); }
     /// <summary>Diagnostics: false forces the plain-image capability path even where the runtime effect compiles.</summary>
     public bool AllowRuntimeEffect { get => (bool)GetValue(AllowRuntimeEffectProperty); set => SetValue(AllowRuntimeEffectProperty, value); }
+    /// <summary>Lab-only: renders the diagnostic Original Crossfade instead of the selected effect. Never an advertised mode.</summary>
+    public bool DiagnosticCrossfade { get => (bool)GetValue(DiagnosticCrossfadeProperty); set => SetValue(DiagnosticCrossfadeProperty, value); }
     public CardViewMode ViewMode { get => (CardViewMode)GetValue(ViewModeProperty); set => SetValue(ViewModeProperty, value); }
     public PhotoRendererStatus RendererStatus { get => (PhotoRendererStatus)GetValue(RendererStatusProperty); private set => SetValue(RendererStatusProperty, value); }
     public DestinationMediaStatus MediaStatus { get => (DestinationMediaStatus)GetValue(MediaStatusProperty); private set => SetValue(MediaStatusProperty, value); }
     public bool IsPlaying { get => (bool)GetValue(IsPlayingProperty); private set => SetValue(IsPlayingProperty, value); }
-    /// <summary>Explicit scene height; NaN lets the card clamp from the viewport height like the prototype.</summary>
+    /// <summary>Explicit scene height; NaN lets the card clamp from the viewport height (brief §2), never below the caption height + 400.</summary>
     public double SceneHeight { get => (double)GetValue(SceneHeightProperty); set => SetValue(SceneHeightProperty, value); }
 
     public Destination? SelectedDestination => _index >= 0 && _index < _data.Count ? _data[_index] : null;
@@ -174,7 +202,10 @@ public sealed partial class DestinationRolodexCard : UserControl
 
     #region Events
 
+    /// <summary>Selection candidate changed (the nearest row, at the half step).</summary>
     public event EventHandler<DestinationChangedEventArgs>? SelectionChanged;
+    /// <summary>Fired once the list has arrived on a destination (q settled on an integer).</summary>
+    public event EventHandler<DestinationChangedEventArgs>? SelectionSettled;
     public event EventHandler<TransitionEventArgs>? TransitionStarted;
     public event EventHandler<TransitionProgressEventArgs>? TransitionProgress;
     public event EventHandler<TransitionEventArgs>? TransitionCompleted;
@@ -190,16 +221,15 @@ public sealed partial class DestinationRolodexCard : UserControl
 
     #region Lifecycle
 
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         _loaded = true;
         _fontSemiBold ??= (FontFamily)Application.Current.Resources["RolodexFontSemiBold"];
         _fontMedium ??= (FontFamily)Application.Current.Resources["RolodexFontMedium"];
         _fontRegular ??= (FontFamily)Application.Current.Resources["RolodexFontRegular"];
         _sceneInk ??= (Brush)Application.Current.Resources["RolodexSceneTextBrushFixed"];
-        _regionInk ??= (Brush)Application.Current.Resources["RolodexRegionBrushFixed"];
+        _regionInk ??= (Brush)Application.Current.Resources["PostcardRegionBrushFixed"];
         GlyphLayout.Apply(Eyebrow, "DESTINATIONS", _fontSemiBold, 10, 2.2, _sceneInk);
-        UpdateMotionBadge();
 #if DEBUG
         if (App.HarnessOptions.NoShader)
         {
@@ -217,6 +247,72 @@ public sealed partial class DestinationRolodexCard : UserControl
 
         UpdateLayoutMetrics();
         InitializeData();
+        if (!_entered)
+        {
+            _entered = true;
+            if (!IsReducedMotionEnabled)
+            {
+                _entranceY.Restart(8, 0, .56, new CubicBezier(.16, 1, .3, 1));
+                _entranceScale.Restart(.996, 1, .56, new CubicBezier(.16, 1, .3, 1));
+            }
+        }
+
+        Wake();
+        await LoadSurfaceAssetsAsync();
+    }
+
+    private async Task LoadSurfaceAssetsAsync()
+    {
+        try
+        {
+            if (_surface is not null && !_surface.Renderer.HasTypeface)
+            {
+                var fontFile = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/Fonts/Inter_SemiBold.ttf"));
+                SKTypeface? typeface;
+                using (var stream = await fontFile.OpenStreamForReadAsync())
+                {
+                    typeface = SKTypeface.FromStream(stream);
+                }
+
+                if (!_loaded || _surface is null)
+                {
+                    typeface?.Dispose();
+                    return;
+                }
+
+                if (typeface is not null)
+                {
+                    _surface.Renderer.SetTypeface(typeface);
+                }
+            }
+
+            if (_globe is null && SKCanvasElement.IsSupportedOnCurrentPlatform())
+            {
+                byte[]? mask = null;
+                try
+                {
+                    var maskFile = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/Globe/landmask.bin"));
+                    var buffer = await Windows.Storage.FileIO.ReadBufferAsync(maskFile);
+                    mask = System.Runtime.InteropServices.WindowsRuntime.WindowsRuntimeBufferExtensions.ToArray(buffer);
+                }
+                catch
+                {
+                    mask = null; // neutral maskless globe
+                }
+
+                if (_loaded && _globe is null)
+                {
+                    _globe = new GlobeElement(new GlobeRenderer(mask));
+                    GlobeHost.Child = _globe;
+                }
+            }
+
+            PresentFrame();
+        }
+        catch (Exception ex)
+        {
+            RendererDetail = $"Scene assets: {ex.Message}";
+        }
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -238,6 +334,20 @@ public sealed partial class DestinationRolodexCard : UserControl
             PhotoHost.Child = null;
             _surface.Release();
             _surface = null;
+        }
+
+        if (_globe is not null)
+        {
+            GlobeHost.Child = null;
+            _globe.Release();
+            _globe = null;
+        }
+
+        if (_shadow is not null)
+        {
+            ShadowHost.Child = null;
+            _shadow.Release();
+            _shadow = null;
         }
 
         _fallbackImage = null;
@@ -273,6 +383,8 @@ public sealed partial class DestinationRolodexCard : UserControl
         {
             _surface = new PhotoTransitionSurface(AllowRuntimeEffect);
             PhotoHost.Child = _surface;
+            _shadow = new CardShadowElement();
+            ShadowHost.Child = _shadow;
             if (_surface.Renderer.HasRuntimeEffect)
             {
                 RendererStatus = PhotoRendererStatus.Shader;
@@ -289,13 +401,10 @@ public sealed partial class DestinationRolodexCard : UserControl
         {
             _fallbackImage = new Image { Stretch = Stretch.UniformToFill, HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
             PhotoHost.Child = _fallbackImage;
-            PhotoHost.Margin = new Thickness(-PhotoRenderer.OverscanPerSide * 480, -PhotoRenderer.OverscanPerSide * 480, -PhotoRenderer.OverscanPerSide * 480, -PhotoRenderer.OverscanPerSide * 480);
             RendererStatus = PhotoRendererStatus.Unavailable;
             RendererDetail = "SKCanvasElement is not supported on this target";
             RendererFallback?.Invoke(this, "Skia surface unavailable on this target. Showing plain photos.");
         }
-
-        UpdateMotionBadge();
     }
 
     private void ApplyHarnessHooks()
@@ -324,7 +433,7 @@ public sealed partial class DestinationRolodexCard : UserControl
 
     private void InitializeData()
     {
-        var previousId = SelectedDestination?.Id;
+        var previousId = SelectedDestination?.Id ?? SelectedDestinationId;
         var incoming = Destinations ?? Array.Empty<Destination>();
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (var d in incoming)
@@ -339,25 +448,26 @@ public sealed partial class DestinationRolodexCard : UserControl
         _previewTicket++;
         _previewing = false;
         _lastPair = null;
-        _previewPair = null;
+        _failedIds.Clear();
         _coordinator.Clear();
         _cache?.Clear();
         _cache?.Pinned.Clear();
         _data = incoming;
+        _pigments = _data.Select(d => ParseSkColor(d.FallbackColor)).ToArray();
+        _geo = _data.Select(d => d.Geo is { IsValid: true } g ? GlobeRenderer.ToUnitVector(g) : ((double, double, double)?)null).ToArray();
         _index = -1;
+        _settledIndex = -1;
 
         var start = previousId is not null ? Math.Max(0, IndexOf(previousId)) : Math.Clamp(SelectedIndex, 0, Math.Max(0, _data.Count - 1));
         var hasData = _data.Count > 0;
         EmptyState.Visibility = hasData ? Visibility.Collapsed : Visibility.Visible;
-        Shadow.Visibility = hasData ? Visibility.Visible : Visibility.Collapsed;
-        CounterTotal.Text = _data.Count.ToString("00");
+        CardFrame.Visibility = hasData ? Visibility.Visible : Visibility.Collapsed;
+        ShadowHost.Visibility = hasData ? Visibility.Visible : Visibility.Collapsed;
         var canNavigate = _data.Count > 1;
         PrevButton.IsEnabled = NextButton.IsEnabled = PlayButton.IsEnabled = canNavigate;
         RebuildIndicators();
         _picker.ReducedMotion = IsReducedMotionEnabled;
         _camera.ReducedMotion = IsReducedMotionEnabled;
-        Picker.Configure(_data.Select(d => d.Country).ToList(), _picker.RowPitch, 60, 54, 300, false);
-        UpdateLayoutMetrics();
         _autoExplicit = false;
         _auto = IsAutoPlayEnabled && !IsReducedMotionEnabled && canNavigate;
         _autoProgress = 0;
@@ -366,9 +476,10 @@ public sealed partial class DestinationRolodexCard : UserControl
         if (!hasData)
         {
             MediaStatus = DestinationMediaStatus.Empty;
-            PresentFrame();
         }
 
+        UpdateLayoutMetrics();
+        PresentFrame();
         Wake();
     }
 
@@ -389,40 +500,40 @@ public sealed partial class DestinationRolodexCard : UserControl
     {
         Pagination.Children.Clear();
         _dots.Clear();
-        var inactive = (Brush)Application.Current.Resources["RolodexPaginationInactiveBrushFixed"];
+        _dotBars.Clear();
+        var inactive = (Brush)Application.Current.Resources["PostcardDotBrushFixed"];
         for (var i = 0; i < _data.Count; i++)
         {
             var index = i;
-            var bar = new Border { Width = 16, Height = 3, CornerRadius = new CornerRadius(4), Background = inactive, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-            var button = new Button { Style = (Style)Application.Current.Resources["RolodexBareButton"], Width = 28, Height = 44, MinWidth = 28, Content = bar };
+            var bar = new Border { Width = 4, Height = 4, CornerRadius = new CornerRadius(2), Background = inactive, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+            var button = new Button { Style = (Style)Application.Current.Resources["RolodexBareButton"], Width = 30, Height = 44, MinWidth = 30, Content = bar };
             AutomationProperties.SetName(button, $"Show {_data[i].Country}");
             ToolTipService.SetToolTip(button, _data[i].Country);
             button.Click += (_, _) => GoTo(index);
             _dots.Add(button);
+            _dotBars.Add(bar);
             Pagination.Children.Add(button);
         }
     }
 
     private void UpdateIndicators()
     {
-        var active = (Brush)Application.Current.Resources["RolodexPaginationActiveBrushFixed"];
-        var inactive = (Brush)Application.Current.Resources["RolodexPaginationInactiveBrushFixed"];
-        for (var i = 0; i < _dots.Count; i++)
+        var inactive = (Brush)Application.Current.Resources["PostcardDotBrushFixed"];
+        for (var i = 0; i < _dotBars.Count; i++)
         {
             var selected = i == _index;
-            if (_dots[i].Content is Border bar)
-            {
-                bar.Width = selected ? 24 : 16;
-                bar.Background = selected ? active : inactive;
-            }
-
+            var bar = _dotBars[i];
+            bar.Width = selected ? 21 : 4;
+            bar.Height = selected ? 3 : 4;
+            bar.CornerRadius = new CornerRadius(selected ? 1.5 : 2);
+            bar.Background = selected ? _accentBrush : inactive;
             AutomationProperties.SetItemStatus(_dots[i], selected ? "selected" : string.Empty);
         }
     }
 
     #endregion
 
-    #region Layout metrics (container-relative sizing; brief 02)
+    #region Layout metrics (content-aware; brief §2)
 
     // xaml-lint: allow responsive - these thresholds are container queries on the card's own width (two cards can sit
     // side by side at different widths) and viewport-height clamps; {utu:Responsive} only switches on window width.
@@ -437,52 +548,56 @@ public sealed partial class DestinationRolodexCard : UserControl
         var viewport = XamlRoot?.Size ?? new Size(1440, 1040);
         _lastViewport = viewport;
         var narrowHost = viewport.Width <= 560;
+        var compact = cardWidth <= 360;
+        var rim = 6d;
+        var outerRadius = narrowHost ? 27d : 30d;
+        Rim.CornerRadius = new CornerRadius(outerRadius);
+        Rim.Padding = new Thickness(rim);
+        Inner.CornerRadius = new CornerRadius(outerRadius - rim);
+        Scene.CornerRadius = new CornerRadius(outerRadius - rim);
+        InnerHighlight.CornerRadius = new CornerRadius(outerRadius - rim);
+        var sceneWidth = Math.Max(0, cardWidth - 2 * rim);
+
+        var captionHeight = Caption.ActualHeight > 0 ? Caption.ActualHeight : 150;
+        var footerHeight = SceneFooter.ActualHeight > 0 ? SceneFooter.ActualHeight : 44;
+        var contentMinimum = captionHeight + 400;
         double sceneHeight;
         if (!double.IsNaN(SceneHeight) && SceneHeight > 0)
         {
-            sceneHeight = Math.Max(340, SceneHeight);
+            sceneHeight = SceneHeight;
         }
         else if (narrowHost)
         {
-            sceneHeight = Math.Clamp(viewport.Height * .55, 340, 510);
-        }
-        else if (viewport.Height <= 760)
-        {
-            sceneHeight = 360;
+            sceneHeight = Math.Clamp(viewport.Height * .73, 553, 620);
         }
         else
         {
-            sceneHeight = Math.Clamp(viewport.Height * .58, 365, 530);
+            sceneHeight = Math.Clamp(viewport.Height * .74, 580, 670);
         }
 
+        sceneHeight = Math.Max(sceneHeight, contentMinimum);
         Scene.Height = sceneHeight;
-        SceneClip.Rect = new Rect(0, 0, cardWidth, sceneHeight);
-        var radius = narrowHost ? 23 : 26;
-        CardBorder.CornerRadius = new CornerRadius(radius);
-        Shadow.CornerRadius = new CornerRadius(radius);
-        Scene.CornerRadius = new CornerRadius(radius, radius, 0, 0);
-        Readability.Margin = new Thickness(0, sceneHeight * .17, 0, sceneHeight * .12);
-
-        var compact = cardWidth <= 360;
-        var windowHeight = compact ? 266 : 300;
-        _picker.RowPitch = Math.Clamp(cardWidth * .17, 58, 80);
-        var fontSize = Math.Clamp(cardWidth * .1245, 36, 64);
-        var longFontSize = Math.Clamp(cardWidth * .113, 34, 59);
-        Picker.Configure(_data.Select(d => d.Country).ToList(), _picker.RowPitch, fontSize, longFontSize, windowHeight, compact);
-        Picker.Margin = new Thickness(0, sceneHeight * .495 - windowHeight / 2d, 0, 0);
-        Picker.Render(_picker.Position, force: true);
-
-        TopBar.Margin = compact ? new Thickness(20, 20, 16, 0) : new Thickness(26, 20, 20, 0);
-        SceneFooter.Margin = compact ? new Thickness(19, 0, 16, 21) : new Thickness(24, 0, 21, 21);
-        Detail.Padding = compact ? (Thickness)Application.Current.Resources["RolodexDetailPaddingSmall"] : (Thickness)Application.Current.Resources["RolodexDetailPadding"];
-        DetailBottom.Margin = new Thickness(0, compact ? 9 : 13, 0, 0);
-        Counter.Visibility = compact ? Visibility.Collapsed : Visibility.Visible;
-        DescriptionText.FontSize = compact ? 12 : 13;
-        LocationText.FontSize = compact ? 11 : 12;
+        SceneClip.Rect = new Rect(0, 0, sceneWidth, sceneHeight);
+        Caption.Padding = new Thickness(compact ? 20 : 26, 0, compact ? 20 : 26, 19);
+        LocationText.FontSize = compact ? 20.5 : 23;
+        SceneFooter.Margin = new Thickness(compact ? 19 : 24, 0, compact ? 16 : 18, captionHeight + 14);
+        TopBar.Margin = compact ? new Thickness(18, 16, 12, 0) : new Thickness(22, 18, 16, 0);
+        GlobeHost.Width = GlobeHost.Height = compact ? 25 : 27;
+        MediaStatusPill.Margin = new Thickness(compact ? 18 : 22, compact ? 60 : 66, 22, 0);
         GlyphLayout.Apply(Eyebrow, "DESTINATIONS", _fontSemiBold!, compact ? 9 : 10, compact ? 1.5 : 2.2, _sceneInk!);
+
+        // Picker centered in the browsing area above the caption and footer.
+        var browsingBottom = sceneHeight - captionHeight - footerHeight - 16;
+        _pickerCenterY = Math.Max(120, browsingBottom / 2 + 12);
+        _rowPitch = Math.Clamp(sceneWidth * .17, 58, 80);
+        _pickerWindow = compact ? 266 : 300;
+        _countryFontSize = Math.Clamp(sceneWidth * .1235, 34, 61);
+        Picker.Configure(_pickerWindow, compact);
+        Picker.Margin = new Thickness(0, _pickerCenterY - _pickerWindow / 2, 0, 0);
+
         if (_fallbackImage is not null)
         {
-            var ox = PhotoRenderer.OverscanPerSide * cardWidth;
+            var ox = PhotoRenderer.OverscanPerSide * sceneWidth;
             var oy = PhotoRenderer.OverscanPerSide * sceneHeight;
             PhotoHost.Margin = new Thickness(-ox, -oy, -ox, -oy);
         }
@@ -497,22 +612,8 @@ public sealed partial class DestinationRolodexCard : UserControl
         var text = coarse ? "SWIPE TO EXPLORE" : "SCROLL TO EXPLORE";
         var compact = Root.ActualWidth > 0 && Root.ActualWidth <= 360;
         GlyphLayout.Apply(HintText, text, _fontMedium!, compact ? 8 : 9, compact ? .8 : 1.3, _sceneInk!);
-    }
-
-    private void UpdateMotionBadge()
-    {
-        if (!_loaded || _fontRegular is null || _sceneInk is null)
-        {
-            return;
-        }
-
-        var text = RendererStatus switch
-        {
-            PhotoRendererStatus.Shader => TransitionKind == PhotoTransitionKind.LiquidWarp ? "LIQUID WARP" : "MORPH BLEND",
-            PhotoRendererStatus.PlainImage => "PLAIN PHOTO · NO SHADER",
-            _ => "PLAIN PHOTO · NO SKIA SURFACE",
-        };
-        GlyphLayout.Apply(MotionBadge, text, _fontRegular, 8, 1.25, _sceneInk);
+        // Below ~340 the hint text and the Look around button would overlap; keep the glyph, drop the words (reflow, never overlap).
+        HintText.Visibility = Root.ActualWidth > 0 && Root.ActualWidth < 340 ? Visibility.Collapsed : Visibility.Visible;
     }
 
     #endregion
@@ -523,24 +624,39 @@ public sealed partial class DestinationRolodexCard : UserControl
     {
         _index = index;
         var d = _data[index];
-        CounterCurrent.Text = (index + 1).ToString("00");
         LocationText.Text = d.Location;
         GlyphLayout.Apply(RegionText, d.Region.ToUpperInvariant(), _fontMedium!, Root.ActualWidth <= 360 ? 8 : 9, Root.ActualWidth <= 360 ? 1 : 1.45, _regionInk!);
         DescriptionText.Text = d.Description;
         LookCountry.Text = d.Country;
         CreditText.Text = string.IsNullOrEmpty(d.PhotoCredit) ? "View photo source" : $"Photo: {d.PhotoCredit}";
         CreditLink.IsEnabled = d.PhotoSource is not null;
-        Scene.Background = new SolidColorBrush(ParseColor(d.FallbackColor));
         UpdateIndicators();
-        if (!IsReducedMotionEnabled)
+        if (!_syncingSelection)
         {
-            _detailOpacity.Restart(.22, 1, .32);
-            _detailY.Restart(4, 0, .32);
+            _syncingSelection = true;
+            SelectedIndex = index;
+            SelectedDestinationId = d.Id;
+            _syncingSelection = false;
         }
-        else
+
+        RequestPhotos(index);
+        SelectionChanged?.Invoke(this, new DestinationChangedEventArgs(index, d, user));
+        Wake();
+    }
+
+    private void OnSettled(int index, bool user)
+    {
+        if (index == _settledIndex)
         {
-            _detailOpacity.Snap(1);
-            _detailY.Snap(0);
+            return;
+        }
+
+        var previous = _settledIndex;
+        _settledIndex = index;
+        var d = _data[index];
+        if (previous >= 0 && previous != index)
+        {
+            _lastPair = (_data[previous], d);
         }
 
         if (user)
@@ -548,27 +664,12 @@ public sealed partial class DestinationRolodexCard : UserControl
             Announcer.Text = $"{d.Country}. {d.Description}";
         }
 
-        if (!_syncingSelectedIndex)
-        {
-            _syncingSelectedIndex = true;
-            SelectedIndex = index;
-            _syncingSelectedIndex = false;
-        }
-
-        ShowMedia(d);
-        Preload(index);
-        SelectionChanged?.Invoke(this, new DestinationChangedEventArgs(index, d, user));
-        Wake();
+        SelectionSettled?.Invoke(this, new DestinationChangedEventArgs(index, d, user));
     }
 
     private void OnSelectedIndexChanged(int value)
     {
-        if (_syncingSelectedIndex || !_loaded || _data.Count == 0)
-        {
-            return;
-        }
-
-        if (value < 0 || value >= _data.Count)
+        if (_syncingSelection || !_loaded || _data.Count == 0 || value < 0 || value >= _data.Count)
         {
             return;
         }
@@ -576,6 +677,20 @@ public sealed partial class DestinationRolodexCard : UserControl
         if (value != _index)
         {
             GoTo(value);
+        }
+    }
+
+    private void OnSelectedIdChanged(string? id)
+    {
+        if (_syncingSelection || !_loaded || id is null)
+        {
+            return;
+        }
+
+        var i = IndexOf(id);
+        if (i >= 0 && i != _index)
+        {
+            GoTo(i);
         }
     }
 
@@ -617,22 +732,49 @@ public sealed partial class DestinationRolodexCard : UserControl
 
     #endregion
 
-    #region Media
+    #region Media (generation-safe; brief §3 and §9)
 
-    private void Preload(int index)
+    /// <summary>Requests the pair around the selection plus its neighbors; a late completion never installs anything, the next frame simply finds it ready.</summary>
+    private void RequestPhotos(int index)
     {
-        if (_cache is null || _data.Count < 2)
+        if (_cache is null || _data.Count == 0)
         {
             return;
         }
 
-        foreach (var offset in new[] { -1, 1 })
+        var token = _mediaToken;
+        foreach (var offset in new[] { 0, 1, -1, 2 })
         {
             var d = _data[CircularMath.PositiveModulo(index + offset, _data.Count)];
-            if (_cache.Peek(d.Id) is null)
+            if (_cache.Peek(d.Id) is not null || _failedIds.Contains(d.Id))
             {
-                _ = _cache.GetAsync(d).ContinueWith(_ => { }, TaskContinuationOptions.OnlyOnFaulted);
+                continue;
             }
+
+            var destination = d;
+            _ = _cache.GetAsync(destination).ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    _ = DispatcherQueue.TryEnqueue(() =>
+                    {
+                        if (token != _mediaToken || !_loaded) return;
+                        _failedIds.Add(destination.Id);
+                        if (_index >= 0 && _data[_index].Id == destination.Id)
+                        {
+                            MediaStatus = DestinationMediaStatus.Failed;
+                            SetStatus("Photo unavailable · check connection", retry: true);
+                            MediaFailed?.Invoke(this, t.Exception?.GetBaseException().Message ?? "decode failed");
+                        }
+
+                        PresentFrame();
+                    });
+                }
+                else
+                {
+                    _ = DispatcherQueue.TryEnqueue(() => { if (_loaded) { PinWorkingSet(); Wake(); } });
+                }
+            }, TaskScheduler.Default);
         }
 
         PinWorkingSet();
@@ -646,110 +788,17 @@ public sealed partial class DestinationRolodexCard : UserControl
         }
 
         _cache.Pinned.Clear();
-        if (_index >= 0 && _data.Count > 0)
+        if (_data.Count > 0)
         {
-            _cache.Pinned.Add(_data[_index].Id);
-            _cache.Pinned.Add(_data[CircularMath.PositiveModulo(_index - 1, _data.Count)].Id);
-            _cache.Pinned.Add(_data[CircularMath.PositiveModulo(_index + 1, _data.Count)].Id);
+            var frame = SceneFrame.Sample(_picker.Position, _data.Count);
+            _cache.Pinned.Add(_data[frame.FromIndex].Id);
+            _cache.Pinned.Add(_data[frame.ToIndex].Id);
+            _cache.Pinned.Add(_data[frame.Selected].Id);
+            _cache.Pinned.Add(_data[CircularMath.PositiveModulo(frame.Selected - 1, _data.Count)].Id);
+            _cache.Pinned.Add(_data[CircularMath.PositiveModulo(frame.Selected + 1, _data.Count)].Id);
         }
 
-        if (_coordinator.DisplayedDestination is { } shown) _cache.Pinned.Add(shown.Id);
         if (_coordinator.Active is { } t) { _cache.Pinned.Add(t.FromDestination.Id); _cache.Pinned.Add(t.ToDestination.Id); }
-    }
-
-    private async void ShowMedia(Destination d, bool force = false)
-    {
-        if (_previewing || _cache is null)
-        {
-            return;
-        }
-
-        var token = ++_mediaToken;
-        SetStatus(null, retry: false);
-        _statusDue = null;
-        _graceDue = null;
-        _pendingDestination = null;
-
-        if (!force && _cache.Peek(d.Id) is { } ready)
-        {
-            Mount(d, ready, token);
-            return;
-        }
-
-        MediaStatus = DestinationMediaStatus.Loading;
-        _pendingDestination = d;
-        _graceDue = DateTime.UtcNow.AddMilliseconds(LoadingGraceMs);
-        _statusDue = DateTime.UtcNow.AddMilliseconds(1100);
-        Wake();
-        try
-        {
-            var photo = await _cache.GetAsync(d);
-            if (token != _mediaToken || !_loaded)
-            {
-                return;
-            }
-
-            Mount(d, photo, token);
-        }
-        catch (Exception ex)
-        {
-            if (token != _mediaToken || !_loaded)
-            {
-                return;
-            }
-
-            _graceDue = null;
-            _statusDue = null;
-            _pendingDestination = null;
-            MediaStatus = DestinationMediaStatus.Failed;
-            _coordinator.Clear();
-            SetStatus("Photo unavailable · check connection", retry: true);
-            MediaFailed?.Invoke(this, ex.Message);
-            PresentFrame();
-        }
-    }
-
-    private void Mount(Destination d, DecodedPhoto photo, int token)
-    {
-        if (token != _mediaToken)
-        {
-            return;
-        }
-
-        _graceDue = null;
-        _statusDue = null;
-        _pendingDestination = null;
-        SetStatus(null, retry: false);
-        MediaStatus = DestinationMediaStatus.Ready;
-
-        var canTransition = _coordinator.DisplayedPhoto is not null
-                            && !ReferenceEquals(_coordinator.DisplayedPhoto, photo)
-                            && !IsReducedMotionEnabled
-                            && !_suppressTransition
-                            && !_previewing
-                            && RendererStatus != PhotoRendererStatus.Unavailable;
-        if (canTransition)
-        {
-            var from = _coordinator.Active?.ToDestination ?? _coordinator.DisplayedDestination!;
-            _lastPair = (from, d);
-            var settings = RendererStatus == PhotoRendererStatus.Shader
-                ? Settings
-                : new TransitionSettings(TransitionKind, TimeSpan.FromMilliseconds(400), 0);
-            _coordinator.Present(d, photo, _picker.LastDirection, settings);
-        }
-        else
-        {
-            _coordinator.ShowImmediately(d, photo);
-        }
-
-        if (_fallbackImage is not null)
-        {
-            _fallbackImage.Source = new BitmapImage(d.ImageUri);
-        }
-
-        PinWorkingSet();
-        PresentFrame();
-        Wake();
     }
 
     private void SetStatus(string? message, bool retry)
@@ -768,13 +817,18 @@ public sealed partial class DestinationRolodexCard : UserControl
         }
 
         var d = _data[_index];
+        _failedIds.Remove(d.Id);
         _cache.Invalidate(d.Id);
-        ShowMedia(d, force: true);
+        SetStatus(null, retry: false);
+        MediaStatus = DestinationMediaStatus.Loading;
+        _statusDue = DateTime.UtcNow.AddMilliseconds(1100);
+        RequestPhotos(_index);
+        Wake();
     }
 
     #endregion
 
-    #region Autoplay
+    #region Autoplay (starts paused; brief §8)
 
     public void Play()
     {
@@ -833,7 +887,7 @@ public sealed partial class DestinationRolodexCard : UserControl
         ToolTipService.SetToolTip(PlayButton, label);
         PlayGlyph.Visibility = _auto ? Visibility.Collapsed : Visibility.Visible;
         PauseGlyph.Visibility = _auto ? Visibility.Visible : Visibility.Collapsed;
-        PlayRing.StrokeDashOffset = 113.1;
+        PlayRing.StrokeDashOffset = 138.2;
     }
 
     #endregion
@@ -862,13 +916,12 @@ public sealed partial class DestinationRolodexCard : UserControl
         GestureHint.Visibility = look ? Visibility.Collapsed : Visibility.Visible;
         CreditLink.Visibility = look ? Visibility.Visible : Visibility.Collapsed;
         PlayButton.Visibility = look ? Visibility.Collapsed : Visibility.Visible;
-        MotionBadge.Visibility = look ? Visibility.Collapsed : Visibility.Visible;
         var reduced = IsReducedMotionEnabled;
         _pickerOpacity.Go(look ? 0 : 1, reduced ? 0 : .36);
-        _pickerY.Go(look ? -Picker.ActualHeight * .04 : 0, reduced ? 0 : .6);
+        _pickerY.Go(look ? -_pickerWindow * .04 : 0, reduced ? 0 : .6);
         _lookOpacity.Go(look ? 1 : 0, reduced ? 0 : .35);
         _lookY.Go(look ? 0 : 6, reduced ? 0 : .4);
-        _readability.Go(look ? 0 : 1, reduced ? 0 : .4);
+        _scrim.Go(look ? .55 : 1, reduced ? 0 : .4);
         ResetCamera();
         if (look)
         {
@@ -917,16 +970,13 @@ public sealed partial class DestinationRolodexCard : UserControl
             Pause();
             ResetCamera();
             _picker.SnapToNearest();
-            _detailOpacity.Snap(1);
-            _detailY.Snap(0);
+            _entranceY.Snap(0);
+            _entranceScale.Snap(1);
+            _hoverLift.Snap(0);
+            _pointerLight.Snap(0);
         }
 
-        if (_index >= 0)
-        {
-            ShowMedia(_data[_index], force: false);
-        }
-
-        Picker.Render(_picker.Position, force: true);
+        PresentFrame();
         Wake();
     }
 
@@ -979,6 +1029,7 @@ public sealed partial class DestinationRolodexCard : UserControl
 
         ExitPreview();
         Pause();
+        _hoverLift.Go(0, .2);
         _capturedPointer = e.Pointer;
         _dragOrigin = point.Position;
         _dragIsLook = ViewMode == CardViewMode.Look;
@@ -989,9 +1040,7 @@ public sealed partial class DestinationRolodexCard : UserControl
         }
         else
         {
-            var pickerPoint = Scene.TransformToVisual(Picker).TransformPoint(point.Position);
-            var row = Picker.HitTestRow(pickerPoint);
-            _picker.DragStart(point.Position.X, point.Position.Y, Now, row);
+            _picker.DragStart(point.Position.X, point.Position.Y, Now, HitTestRow(point.Position.Y));
             if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
             {
                 Picker.Focus(FocusState.Pointer);
@@ -1001,6 +1050,25 @@ public sealed partial class DestinationRolodexCard : UserControl
         Scene.CapturePointer(e.Pointer);
         e.Handled = true;
         Wake();
+    }
+
+    /// <summary>Row step under a scene y coordinate (rows are drawn by the renderer; solve the pose geometry analytically).</summary>
+    private long? HitTestRow(double sceneY)
+    {
+        var y = sceneY - _pickerCenterY - _pickerY.Value;
+        if (Math.Abs(y) > _pickerWindow / 2)
+        {
+            return null;
+        }
+
+        var d = y / _rowPitch;
+        for (var i = 0; i < 3; i++)
+        {
+            d = y / (_rowPitch * (1 - Math.Min(Math.Abs(d), 3) * .035));
+        }
+
+        var step = CircularMath.RoundLikeJavaScript(_picker.Position + d);
+        return Math.Abs(step - _picker.Position) < 2.6 ? step : null;
     }
 
     private void OnScenePointerMoved(object sender, PointerRoutedEventArgs e)
@@ -1031,6 +1099,11 @@ public sealed partial class DestinationRolodexCard : UserControl
             }
         }
 
+        if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+        {
+            _pointerScenePoint = new SKPoint((float)point.Position.X, (float)point.Position.Y);
+        }
+
         Wake();
     }
 
@@ -1058,6 +1131,11 @@ public sealed partial class DestinationRolodexCard : UserControl
         if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
         {
             _hover = true;
+            if (!IsReducedMotionEnabled)
+            {
+                _pointerLight.Go(1, .32);
+            }
+
             Wake();
         }
     }
@@ -1065,6 +1143,7 @@ public sealed partial class DestinationRolodexCard : UserControl
     private void OnScenePointerExited(object sender, PointerRoutedEventArgs e)
     {
         _hover = false;
+        _pointerLight.Go(0, .32);
         if (_capturedPointer is null && ViewMode == CardViewMode.Browse)
         {
             _camera.ClearPointer();
@@ -1159,7 +1238,7 @@ public sealed partial class DestinationRolodexCard : UserControl
 
     #endregion
 
-    #region Debug replay / scrub (demo panel only)
+    #region Lab replay / scrub (preview; no app side effects)
 
     private async Task<(Destination From, Destination To, DecodedPhoto FromPhoto, DecodedPhoto ToPhoto)?> PreparePreviewAsync()
     {
@@ -1174,23 +1253,19 @@ public sealed partial class DestinationRolodexCard : UserControl
             ViewMode = CardViewMode.Browse;
         }
 
-        var pair = _lastPair ?? (_data[Math.Max(0, _index)], _data[CircularMath.PositiveModulo(Math.Max(0, _index) + 1, _data.Count)]);
+        var current = Math.Max(0, _index);
+        var pair = _lastPair ?? (_data[current], _data[CircularMath.PositiveModulo(current + 1, _data.Count)]);
         if (RendererStatus != PhotoRendererStatus.Shader || IsReducedMotionEnabled)
         {
-            GoTo(IndexOf(pair.To.Id));
-            RendererFallback?.Invoke(this, IsReducedMotionEnabled ? "Reduced motion is enabled." : "Runtime effect unavailable. Using the plain-image path.");
+            RendererFallback?.Invoke(this, IsReducedMotionEnabled ? "Reduced motion is enabled; replay is unavailable." : "Runtime effect unavailable. Using the plain-image path.");
             return null;
         }
 
         var ticket = ++_previewTicket;
-        _mediaToken++;
         _statusDue = null;
-        _graceDue = null;
         SetStatus(null, retry: false);
         _previewing = true;
         _picker.IsFrozen = true;
-        _previewPair = pair;
-        _lastPair = pair;
         try
         {
             var from = await _cache.GetAsync(pair.From);
@@ -1215,7 +1290,7 @@ public sealed partial class DestinationRolodexCard : UserControl
         }
     }
 
-    /// <summary>Debug: replays the last transition pair (or current → next) with the current settings.</summary>
+    /// <summary>Lab: replays the last settled pair (or current → next) over <see cref="TransitionDuration"/>, as a preview.</summary>
     public async Task<bool> ReplayTransitionAsync()
     {
         _coordinator.CancelPreview();
@@ -1233,7 +1308,7 @@ public sealed partial class DestinationRolodexCard : UserControl
         return true;
     }
 
-    /// <summary>Debug: holds the last pair at a fixed progress; rows follow smoothstep(progress).</summary>
+    /// <summary>Lab: holds the pair at a fixed progress; rows follow smoothstep(progress).</summary>
     public async Task<bool> SeekTransitionAsync(double progress)
     {
         var pair = await PreparePreviewAsync();
@@ -1269,18 +1344,7 @@ public sealed partial class DestinationRolodexCard : UserControl
         _previewing = false;
         _picker.IsFrozen = false;
         _picker.SnapToNearest();
-        var d = _data[CircularMath.PositiveModulo(CircularMath.RoundLikeJavaScript(_picker.Position), _data.Count)];
-        _suppressTransition = true;
-        try
-        {
-            ShowMedia(d, force: false);
-        }
-        finally
-        {
-            _suppressTransition = false;
-        }
-
-        Picker.Render(_picker.Position, force: true);
+        PresentFrame();
     }
 
     private void OnTransitionCompleted(TransitionCoordinator.Transition t)
@@ -1288,11 +1352,10 @@ public sealed partial class DestinationRolodexCard : UserControl
         if (t.IsPreview && _previewing)
         {
             _picker.SyncPreview(IndexOf(t.FromDestination.Id), IndexOf(t.ToDestination.Id), 1);
-            _coordinator.ShowImmediately(t.ToDestination, t.ToPhoto);
+            _coordinator.CancelPreview();
             _previewing = false;
             _picker.IsFrozen = false;
-            MediaStatus = DestinationMediaStatus.Ready;
-            PinWorkingSet();
+            _picker.SnapToNearest();
         }
 
         TransitionCompleted?.Invoke(this, new TransitionEventArgs(t.FromDestination, t.ToDestination, t.Settings.Kind, t.Settings.Duration, t.IsPreview, t.Direction));
@@ -1322,12 +1385,11 @@ public sealed partial class DestinationRolodexCard : UserControl
 
         if (XamlRoot is { } root && root.Size != _lastViewport)
         {
-            // A window resize that reached XamlRoot.Size without a Changed/SizeChanged callback (seen during harness resizes).
             UpdateLayoutMetrics();
         }
 
         var now = Now;
-        var dt = _lastTick is { } last ? Math.Min(now - last, .032) : 1d / 60;
+        var dt = _lastTick is { } last ? Math.Min(now - last, .5) : 1d / 60;
         if (_lastTick is { } prev)
         {
             _frameIntervals.Add((now - prev) * 1000);
@@ -1342,7 +1404,7 @@ public sealed partial class DestinationRolodexCard : UserControl
         if (canAuto)
         {
             var interval = Math.Max(MinAutoPlayIntervalMs, AutoPlayInterval.TotalMilliseconds);
-            _autoProgress += dt * 1000 / interval;
+            _autoProgress += Math.Min(dt, .032) * 1000 / interval;
             if (_autoProgress >= 1)
             {
                 _autoProgress = 0;
@@ -1350,12 +1412,12 @@ public sealed partial class DestinationRolodexCard : UserControl
             }
         }
 
-        PlayRing.StrokeDashOffset = 113.1 * (1 - _autoProgress);
+        PlayRing.StrokeDashOffset = 138.2 * (1 - _autoProgress);
 
-        _camera.IsDrifting = _auto && !IsReducedMotionEnabled && ViewMode == CardViewMode.Browse;
-        var cameraMoving = _camera.Tick(dt);
+        _camera.IsDrifting = false;
+        var cameraMoving = _camera.Tick(Math.Min(dt, .032));
 
-        var transitioning = _coordinator.Tick(dt * 1000);
+        var transitioning = _coordinator.Tick(Math.Min(dt, .032) * 1000);
         if (_coordinator.Active is { } active)
         {
             if (active.IsPreview && _previewing)
@@ -1366,30 +1428,28 @@ public sealed partial class DestinationRolodexCard : UserControl
             TransitionProgress?.Invoke(this, new TransitionProgressEventArgs(active.Progress, active.IsPreview, active.FromDestination, active.ToDestination));
         }
 
-        // Loading policy: keep the previous photo for a short grace, then show the destination's own colour with an explicit status.
-        if (_pendingDestination is { } pending)
+        if (!_previewing && _picker.IsSettled && _index >= 0)
         {
-            if (_graceDue is { } grace && DateTime.UtcNow >= grace)
-            {
-                _graceDue = null;
-                _coordinator.Clear();
-            }
+            OnSettled(_index, true);
+        }
 
-            if (_statusDue is { } due && DateTime.UtcNow >= due)
+        if (_statusDue is { } due && DateTime.UtcNow >= due)
+        {
+            _statusDue = null;
+            if (MediaStatus == DestinationMediaStatus.Loading && _index >= 0)
             {
-                _statusDue = null;
-                SetStatus($"Loading {pending.Country} photo…", retry: false);
+                SetStatus($"Loading {_data[_index].Country} photo…", retry: false);
             }
         }
 
-        var tweens = _detailOpacity.Tick(dt) | _detailY.Tick(dt) | _pickerOpacity.Tick(dt) | _pickerY.Tick(dt) | _lookOpacity.Tick(dt) | _lookY.Tick(dt) | _readability.Tick(dt);
-        DetailCopy.Opacity = _detailOpacity.Value;
-        DetailTranslate.Y = _detailY.Value;
+        var tdt = Math.Min(dt, .032);
+        var tweens = _pickerOpacity.Tick(tdt) | _pickerY.Tick(tdt) | _lookOpacity.Tick(tdt) | _lookY.Tick(tdt) | _scrim.Tick(tdt)
+                     | _entranceY.Tick(tdt) | _entranceScale.Tick(tdt) | _hoverLift.Tick(tdt) | _pointerLight.Tick(tdt);
         Picker.Opacity = _pickerOpacity.Value;
-        PickerTranslate.Y = _pickerY.Value;
         LookTitle.Opacity = _lookOpacity.Value;
         LookTitleTranslate.Y = _lookY.Value;
-        Readability.Opacity = _readability.Value;
+        FrameTransform.TranslateY = _entranceY.Value + _hoverLift.Value;
+        FrameTransform.ScaleX = FrameTransform.ScaleY = _entranceScale.Value;
 
         PresentFrame();
         if (_cache is not null && _surface is not null)
@@ -1398,24 +1458,200 @@ public sealed partial class DestinationRolodexCard : UserControl
             _cache.Collect(_surface.Renderer.FramesRendered);
         }
 
-        var pendingWork = _pendingDestination is not null && (_graceDue is not null || _statusDue is not null);
-        if (!(moving || cameraMoving || canAuto || transitioning || tweens || _camera.IsDrifting || pendingWork))
+        var pendingWork = _statusDue is not null;
+        if (!(moving || cameraMoving || canAuto || transitioning || tweens || pendingWork))
         {
             _timer.Stop();
             _lastTick = null;
         }
     }
 
+    /// <summary>Builds one coherent frame from the picker position (or the lab preview) and presents it to every Skia element.</summary>
     private void PresentFrame()
     {
-        if (_surface is null)
+        if (!_loaded || _data.Count == 0)
         {
             return;
         }
 
-        var backdrop = _index >= 0 && _index < _data.Count ? ParseSkColor(_data[_index].FallbackColor) : SKColor.Parse("#295c65");
-        var (from, to, focalA, focalB, progress, kind, strength, direction) = _coordinator.FrameInputs();
-        _surface.Present(new PhotoFrame(from, to, focalA, focalB, progress, strength, direction, kind, _camera.Pose, backdrop));
+        var n = _data.Count;
+        var scene = SceneFrame.Sample(_picker.Position, n);
+        var sceneWidth = (float)Math.Max(1, Scene.ActualWidth > 0 ? Scene.ActualWidth : 468);
+        var material = MaterialColors.From(_pigments[scene.FromIndex], _pigments[scene.ToIndex], scene.P);
+        var accent = Windows.UI.Color.FromArgb(255, material.Accent.Red, material.Accent.Green, material.Accent.Blue);
+        if (_accentBrush.Color != accent)
+        {
+            _accentBrush.Color = accent;
+        }
+
+        Picker.SetAccent(accent);
+
+        // Caption treatment follows travel; zero at arrival.
+        Caption.Opacity = IsReducedMotionEnabled ? 1 : scene.CaptionOpacity;
+        CaptionTranslate.Y = IsReducedMotionEnabled ? 0 : scene.CaptionOffsetY;
+
+        // Media identity: in flight the adjacent ordered pair at fraction p; at rest the settled photo.
+        DecodedPhoto? from, to;
+        FocalPoint focalA, focalB;
+        float progress;
+        int direction;
+        var kind = TransitionKind;
+        if (_previewing && _coordinator.Active is { } preview)
+        {
+            from = preview.FromPhoto;
+            to = preview.ToPhoto;
+            focalA = preview.FromDestination.FocalPoint;
+            focalB = preview.ToDestination.FocalPoint;
+            progress = preview.Progress;
+            direction = preview.Direction;
+            kind = preview.Settings.Kind;
+        }
+        else
+        {
+            var dFrom = _data[scene.FromIndex];
+            var dTo = _data[scene.ToIndex];
+            from = _cache?.Peek(dFrom.Id);
+            to = _cache?.Peek(dTo.Id);
+            focalA = dFrom.FocalPoint;
+            focalB = dTo.FocalPoint;
+            progress = (float)scene.P;
+            direction = 1;
+            if (from is null || to is null)
+            {
+                // One endpoint not ready: show whichever is ready, static; the next frame after decode draws the current fraction.
+                var fromReady = from is not null;
+                var ready = from ?? to;
+                from = to = ready;
+                focalA = focalB = fromReady ? dFrom.FocalPoint : dTo.FocalPoint;
+                progress = 0;
+                if (ready is null && MediaStatus != DestinationMediaStatus.Failed && MediaStatus != DestinationMediaStatus.Loading)
+                {
+                    MediaStatus = DestinationMediaStatus.Loading;
+                    _statusDue ??= DateTime.UtcNow.AddMilliseconds(1100);
+                }
+            }
+            else if (MediaStatus != DestinationMediaStatus.Ready && !_failedIds.Contains(_data[scene.Selected].Id))
+            {
+                MediaStatus = DestinationMediaStatus.Ready;
+                _statusDue = null;
+                SetStatus(null, retry: false);
+            }
+        }
+
+        var camera = _camera.Pose;
+        if (!IsReducedMotionEnabled)
+        {
+            camera = camera with { Zoom = (float)(camera.Zoom * scene.ArrivalScale), TranslateY = (float)(camera.TranslateY + scene.ArrivalOffsetY) };
+        }
+
+        var frame = new PhotoFrame(from, to, focalA, focalB, progress, (float)TransitionStrength, direction, kind, camera, material.Pigment)
+        {
+            DiagnosticCrossfade = DiagnosticCrossfade,
+            Rows = BuildRows(scene, sceneWidth),
+            RowsOpacity = (float)_pickerOpacity.Value,
+            RowsOffsetY = (float)_pickerY.Value,
+            RowInk = new SKColor(0xFF, 0xFD, 0xF6),
+            Scrim = (float)_scrim.Value,
+            PointerLight = _pointerScenePoint,
+            PointerLightOpacity = (float)_pointerLight.Value,
+        };
+        _surface?.Present(frame);
+
+        if (_fallbackImage is not null && !_previewing)
+        {
+            var shown = _data[scene.Selected];
+            if (_fallbackImage.Tag as string != shown.Id)
+            {
+                _fallbackImage.Tag = shown.Id;
+                _fallbackImage.Source = new BitmapImage(shown.ImageUri);
+            }
+        }
+
+        // Globe follows the same pair and fraction; a destination without coordinates shows a neutral, unpinned globe.
+        if (_globe is not null)
+        {
+            (double X, double Y, double Z)? orientation = null;
+            if (_geo[scene.Selected] is { } gSel)
+            {
+                orientation = _geo[scene.FromIndex] is { } a && _geo[scene.ToIndex] is { } b && !IsReducedMotionEnabled ? GlobeRenderer.Slerp(a, b, scene.P) : gSel;
+            }
+
+            _globe.Present(new GlobeElement.GlobeFrame(orientation, material.Accent));
+        }
+
+        _shadow?.Present(new CardShadowElement.ShadowFrame(material.Shadow, (float)Rim.CornerRadius.TopLeft, 1f));
+    }
+
+    private IReadOnlyList<RowGlyphs> BuildRows(SceneFrame scene, float sceneWidth)
+    {
+        if (_surface is null || !_surface.Renderer.HasTypeface || _pickerOpacity.Value <= 0.001)
+        {
+            return Array.Empty<RowGlyphs>();
+        }
+
+        var n = _data.Count;
+        var q = _picker.Position;
+        var baseIndex = (long)Math.Floor(q);
+        var list = new List<RowGlyphs>(CountryPicker.RowPool);
+        var fontSize = (float)_countryFontSize;
+        var available = sceneWidth - 48;
+        for (var i = 0; i < CountryPicker.RowPool; i++)
+        {
+            var integer = baseIndex + i - (long)RowPoolHalf;
+            var d = integer - q;
+            var pose = CircularMath.Pose(d, _rowPitch);
+            var a = Math.Abs(d);
+            if (!pose.Visible || (n == 1 && a > .5))
+            {
+                continue;
+            }
+
+            var edge = _pickerWindow / 2 - Math.Abs(pose.Y);
+            var mask = Math.Clamp(edge / (.1 * _pickerWindow), 0, 1);
+            var opacity = pose.Opacity * mask;
+            if (opacity <= .002)
+            {
+                continue;
+            }
+
+            var destination = _data[CircularMath.PositiveModulo(integer, n)];
+            var size = FitFontSize(destination.Country, fontSize, available);
+            var zFactor = 900d / (900d + 13d * a);
+            var blur = IsReducedMotionEnabled ? 0f : (a > 1.3 ? (float)Math.Min((a - 1.3) * .45, 1) : 0f);
+            var photoAlpha = IsReducedMotionEnabled ? 0f : (float)scene.PhotoInTypeOpacity(d);
+            var photo = photoAlpha > .004f ? _cache?.Peek(destination.Id) : null;
+            list.Add(new RowGlyphs(
+                destination.Country,
+                size,
+                -.055f,
+                (float)(_pickerCenterY + pose.Y),
+                (float)(pose.Scale * zFactor),
+                (float)(pose.Scale * zFactor * Math.Cos(pose.RotationX * Math.PI / 180d)),
+                (float)opacity,
+                blur,
+                photo,
+                destination.FocalPoint,
+                photoAlpha));
+        }
+
+        return list;
+    }
+
+    /// <summary>Longer labels shrink to fit the row width instead of clipping (brief §2).</summary>
+    private float FitFontSize(string text, float size, float available)
+    {
+        var key = (text, size, available);
+        if (_fitCache.TryGetValue(key, out var fitted))
+        {
+            return fitted;
+        }
+
+        // Inter SemiBold averages ~0.58 em per glyph; tracking is −0.055 em.
+        var estimate = text.Length * (.58f - .055f) * size;
+        fitted = estimate <= available ? size : Math.Max(30f, size * available / estimate);
+        if (_fitCache.Count > 64) _fitCache.Clear();
+        _fitCache[key] = fitted;
+        return fitted;
     }
 
     #endregion
@@ -1433,13 +1669,24 @@ public sealed partial class DestinationRolodexCard : UserControl
 
     public (int Count, long Bytes, int Retired) GetCacheStatistics() => _cache is null ? (0, 0, 0) : (_cache.Count, _cache.Bytes, _cache.RetiredCount);
 
-    #endregion
+    /// <summary>Current frame sample (q, pair, fraction, travel), for tests and the lab.</summary>
+    public SceneFrame CurrentFrame => SceneFrame.Sample(_picker.Position, _data.Count);
 
-    private static Windows.UI.Color ParseColor(string hex)
+#if DEBUG
+    /// <summary>Harness only: freezes the picker at a fractional position so the position-driven scene can be captured mid-flight.</summary>
+    public void HoldPositionForDiagnostics(double q)
     {
-        var c = ParseSkColor(hex);
-        return Windows.UI.Color.FromArgb(c.Alpha, c.Red, c.Green, c.Blue);
+        ExitPreview();
+        Pause();
+        _picker.IsFrozen = true;
+        _picker.SyncPreview(0, 0, 0);
+        _picker.SetPositionForDiagnostics(q);
+        PresentFrame();
+        Wake();
     }
+#endif
+
+    #endregion
 
     private static SKColor ParseSkColor(string hex) => SKColor.TryParse(hex, out var c) ? c : SKColor.Parse("#244e51");
 }

@@ -68,7 +68,7 @@ internal static class FixtureExport
             {
                 foreach (var p in Stops)
                 {
-                    var frame = new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, p, .6f, pair.Direction, mode, CameraPose.Identity, SKColors.Black);
+                    var frame = new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, p, .6f, pair.Direction, mode, CameraPose.Identity, SKColors.Black) { Scrim = 0 };
                     var name = $"{ModeName(mode)}-{pair.Name}-{(int)(p * 100):000}.png";
                     Save(surface, renderer, frame, Path.Combine(fixedDir, name));
                     captures.Add(name);
@@ -82,14 +82,14 @@ internal static class FixtureExport
         var endpointChecks = new List<string>();
         foreach (var pair in pairs)
         {
-            var staticA = Render(surface, renderer, PhotoFrame.Static(pair.A, pair.DA.FocalPoint, CameraPose.Identity, SKColors.Black));
-            var staticB = Render(surface, renderer, PhotoFrame.Static(pair.B, pair.DB.FocalPoint, CameraPose.Identity, SKColors.Black));
+            var staticA = Render(surface, renderer, PhotoFrame.Static(pair.A, pair.DA.FocalPoint, CameraPose.Identity, SKColors.Black) with { Scrim = 0 });
+            var staticB = Render(surface, renderer, PhotoFrame.Static(pair.B, pair.DB.FocalPoint, CameraPose.Identity, SKColors.Black) with { Scrim = 0 });
             foreach (var mode in new[] { PhotoTransitionKind.MorphBlend, PhotoTransitionKind.LiquidWarp })
             {
-                var at0 = Render(surface, renderer, new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, 0, .6f, pair.Direction, mode, CameraPose.Identity, SKColors.Black));
-                var at1 = Render(surface, renderer, new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, 1, .6f, pair.Direction, mode, CameraPose.Identity, SKColors.Black));
-                var mid = Render(surface, renderer, new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, .5f, .6f, pair.Direction, mode, CameraPose.Identity, SKColors.Black));
-                var fade = Render(surface, renderer, new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, .5f, .6f, pair.Direction, (PhotoTransitionKind)2, CameraPose.Identity, SKColors.Black));
+                var at0 = Render(surface, renderer, new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, 0, .6f, pair.Direction, mode, CameraPose.Identity, SKColors.Black) { Scrim = 0 });
+                var at1 = Render(surface, renderer, new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, 1, .6f, pair.Direction, mode, CameraPose.Identity, SKColors.Black) { Scrim = 0 });
+                var mid = Render(surface, renderer, new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, .5f, .6f, pair.Direction, mode, CameraPose.Identity, SKColors.Black) { Scrim = 0 });
+                var fade = Render(surface, renderer, new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, .5f, .6f, pair.Direction, mode, CameraPose.Identity, SKColors.Black) { Scrim = 0, DiagnosticCrossfade = true });
                 endpointChecks.Add($"{{ \"pair\": \"{pair.Name}\", \"mode\": \"{ModeName(mode)}\", \"maxDiffAt0\": {MaxDiff(at0, staticA)}, \"maxDiffAt1\": {MaxDiff(at1, staticB)}, \"midpointVsCrossfadeMeanDiff\": {MeanDiff(mid, fade):0.##}, \"midpointVsSourceMeanDiff\": {MeanDiff(mid, staticA):0.##} }}");
             }
         }
@@ -108,10 +108,10 @@ internal static class FixtureExport
                      new CameraPose(12, 12, 1.25f, 1.6f, 1f),
                  })
         {
-            var px = Render(surface, renderer, PhotoFrame.Static(it, byId["it"].FocalPoint, pose, magenta));
+            var px = Render(surface, renderer, PhotoFrame.Static(it, byId["it"].FocalPoint, pose, magenta) with { Scrim = 0 });
             var count = CountColor(px, magenta);
             exposure.Add($"{{ \"pose\": \"t({pose.TranslateX},{pose.TranslateY}) rx{pose.RotateXDegrees} ry{pose.RotateYDegrees} z{pose.Zoom}\", \"exposedPixels\": {count} }}");
-            Save(surface, renderer, PhotoFrame.Static(it, byId["it"].FocalPoint, pose, magenta), Path.Combine(fixedDir, $"camera-{pose.TranslateX}-{pose.TranslateY}-z{pose.Zoom.ToString(CultureInfo.InvariantCulture)}.png"));
+            Save(surface, renderer, PhotoFrame.Static(it, byId["it"].FocalPoint, pose, magenta) with { Scrim = 0 }, Path.Combine(fixedDir, $"camera-{pose.TranslateX}-{pose.TranslateY}-z{pose.Zoom.ToString(CultureInfo.InvariantCulture)}.png"));
         }
 
         report.AppendLine($"  \"cameraCoverage\": [\n    {string.Join(",\n    ", exposure)}\n  ],");
@@ -129,7 +129,7 @@ internal static class FixtureExport
                 for (var i = 0; i < frames; i++)
                 {
                     var p = i / (float)(frames - 1);
-                    var frame = new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, p, .6f, pair.Direction, mode, CameraPose.Identity, SKColors.Black);
+                    var frame = new PhotoFrame(pair.A, pair.B, pair.DA.FocalPoint, pair.DB.FocalPoint, p, .6f, pair.Direction, mode, CameraPose.Identity, SKColors.Black) { Scrim = 0 };
                     Save(surface, renderer, frame, Path.Combine(folder, $"f{i:000}.png"));
                 }
 

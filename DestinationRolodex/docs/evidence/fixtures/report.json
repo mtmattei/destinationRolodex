@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-07T19:27:36.3171541Z",
+  "date": "2026-10-08T12:18:54.5424319Z",
   "sceneSize": [480, 530],
   "layerSize": [604.8, 667.8],
   "backend": "SkiaSharp CPU raster (SKSurface.Create), same SkSL as the SKCanvasElement path",
@@ -24,6 +24,6 @@
     { "pose": "t(12,12) rx1.25 ry1.6 z1", "exposedPixels": 0 }
   ],
   "sequences": ["frames/morph-ph-jp (37 frames)", "frames/liquid-ph-jp (37 frames)", "frames/morph-jp-ph (37 frames)", "frames/liquid-jp-ph (37 frames)"],
-  "cpuRasterRenderMs": { "count": 218, "p50": 95.67, "p95": 151.63, "max": 180.42 },
+  "cpuRasterRenderMs": { "count": 218, "p50": 82.57, "p95": 128.37, "max": 156.17 },
   "status": "ok"
 }

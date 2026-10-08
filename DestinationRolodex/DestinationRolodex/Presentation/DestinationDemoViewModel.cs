@@ -51,8 +51,14 @@ public sealed partial class DestinationDemoViewModel : ObservableObject
     [ObservableProperty]
     private bool _isReplaying;
 
-    public bool IsMorph => TransitionKind == PhotoTransitionKind.MorphBlend;
-    public bool IsLiquid => TransitionKind == PhotoTransitionKind.LiquidWarp;
+    /// <summary>Lab-only diagnostic dissolve; the two production effects stay the only advertised modes.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsMorph))]
+    [NotifyPropertyChangedFor(nameof(IsLiquid))]
+    private bool _isDiagnosticCrossfade;
+
+    public bool IsMorph => !IsDiagnosticCrossfade && TransitionKind == PhotoTransitionKind.MorphBlend;
+    public bool IsLiquid => !IsDiagnosticCrossfade && TransitionKind == PhotoTransitionKind.LiquidWarp;
     public TimeSpan Duration => TimeSpan.FromMilliseconds(DurationMs);
     public double Strength => StrengthPercent / 100d;
     public string DurationText => $"{DurationMs / 1000d:0.00} s";
@@ -72,8 +78,15 @@ public sealed partial class DestinationDemoViewModel : ObservableObject
     [RelayCommand]
     private void ChooseLiquid() => Choose(PhotoTransitionKind.LiquidWarp);
 
+    public void ChooseDiagnosticCrossfade()
+    {
+        IsDiagnosticCrossfade = true;
+        Replay();
+    }
+
     public void Choose(PhotoTransitionKind kind, bool replay = true)
     {
+        IsDiagnosticCrossfade = false;
         TransitionKind = kind;
         if (replay)
         {

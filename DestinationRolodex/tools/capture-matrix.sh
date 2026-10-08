@@ -19,6 +19,13 @@ run mobile-rest            --viewport=390x844   --settle=2500
 run desktop-liquid-050     --viewport=1440x1040 --mode=liquid --seek=0.5 --settle=1500
 run desktop-morph-050      --viewport=1440x1040 --mode=morph  --seek=0.5 --settle=1500
 run desktop-look           --viewport=1440x1040 --look --settle=2500
+run desktop-position-025   --viewport=1440x1040 --position=0.25 --settle=2500
+run desktop-position-050   --viewport=1440x1040 --position=0.5 --settle=2500
+run desktop-position-075   --viewport=1440x1040 --position=0.75 --settle=2500
+run desktop-position-150   --viewport=1440x1040 --position=1.5 --mode=liquid --settle=2500
+run desktop-crossfade      --viewport=1440x1040 --position=0.5 --crossfade --settle=2500
+run tablet-rest            --viewport=768x1024  --settle=2500
+run narrow-rest            --viewport=320x700   --settle=2500
 run mobile-look            --viewport=390x844   --look --settle=2500
 run desktop-loading        --viewport=1440x1040 --select=it --media-delay=30000 --settle=2500
 run desktop-failed         --viewport=1440x1040 --select=jp --media-fail=jp --settle=2500

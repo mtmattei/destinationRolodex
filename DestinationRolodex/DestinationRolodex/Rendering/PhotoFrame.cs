@@ -54,6 +54,23 @@ public sealed class DecodedPhoto : IDisposable
 }
 
 /// <summary>
+/// One country row as the renderer draws it: solid ink base plus, in flight, its own destination photo through the
+/// same glyphs (brief §4 photo-in-type). All geometry is in scene coordinates; the row is centered horizontally.
+/// </summary>
+public sealed record RowGlyphs(
+    string Text,
+    float FontSize,
+    float TrackingEm,
+    float CenterY,
+    float ScaleX,
+    float ScaleY,
+    float Opacity,
+    float BlurSigma,
+    DecodedPhoto? Photo,
+    FocalPoint Focal,
+    float PhotoAlpha);
+
+/// <summary>
 /// Immutable inputs for one rendered frame. Built on the UI thread, read on the render thread.
 /// Progress 0 is exactly <see cref="From"/>; progress 1 is exactly <see cref="To"/>. A static frame sets both to the same photo.
 /// </summary>
@@ -69,6 +86,22 @@ public sealed record PhotoFrame(
     CameraPose Camera,
     SKColor Backdrop)
 {
+    /// <summary>Shader mode override for the lab's diagnostic crossfade (mode 2); never advertised as an effect.</summary>
+    public bool DiagnosticCrossfade { get; init; }
+
+    /// <summary>Country rows to draw above the scrim; empty in Look around or for an empty catalog.</summary>
+    public IReadOnlyList<RowGlyphs> Rows { get; init; } = Array.Empty<RowGlyphs>();
+    public float RowsOpacity { get; init; } = 1;
+    public float RowsOffsetY { get; init; }
+    public SKColor RowInk { get; init; } = new(0xFF, 0xFD, 0xF6);
+
+    /// <summary>Scrim strength behind the caption (0 hides it, 1 is the authored strength).</summary>
+    public float Scrim { get; init; } = 1;
+
+    /// <summary>Faint warm highlight at the pointer (fine pointers only); null when absent.</summary>
+    public SKPoint? PointerLight { get; init; }
+    public float PointerLightOpacity { get; init; }
+
     public static PhotoFrame Empty(SKColor backdrop) => new(null, null, FocalPoint.Center, FocalPoint.Center, 0, .6f, 1, PhotoTransitionKind.MorphBlend, CameraPose.Identity, backdrop);
 
     public static PhotoFrame Static(DecodedPhoto photo, FocalPoint focal, CameraPose camera, SKColor backdrop) =>

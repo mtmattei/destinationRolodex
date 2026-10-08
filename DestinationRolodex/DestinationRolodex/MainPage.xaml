@@ -4,7 +4,7 @@
       xmlns:controls="using:DestinationRolodex.Controls"
       xmlns:models="using:DestinationRolodex.Models"
       xmlns:utu="using:Uno.Toolkit.UI"
-      Background="{StaticResource RolodexPageBrushFixed}">
+      Background="{StaticResource PostcardPageBrushFixed}">
   <!-- xaml-lint: allow hex - the demo page reproduces the approved prototype's page treatment (demo.css); its values are the kit's tokens, theme-invariant by design. -->
   <!-- xaml-lint: allow card - the motion-lab panels copy the prototype's demo chrome; CardContentControl adds interaction overlays the design does not have. -->
   <Page.Resources>
@@ -99,7 +99,7 @@
     </Style>
   </Page.Resources>
 
-  <Grid x:Name="PageRoot" Background="{StaticResource RolodexPageBrushFixed}">
+  <Grid x:Name="PageRoot" Background="{StaticResource PostcardPageBrushFixed}">
     <ScrollViewer x:Name="PageScroll" HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled">
       <Grid utu:SafeArea.Insets="VisibleBounds">
         <Grid.RowDefinitions>
@@ -114,7 +114,7 @@
             <Viewbox Width="24" Height="24"><Path Style="{StaticResource RolodexIconGlobe}" Stroke="{StaticResource DemoBrandIconBrushFixed}" StrokeThickness="1.1" /></Viewbox>
             <TextBlock Text="Destination Rolodex" FontFamily="{StaticResource RolodexFontSemiBold}" FontSize="13" Foreground="{StaticResource RolodexPageInkBrushFixed}" VerticalAlignment="Center" />
           </StackPanel>
-          <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center" HorizontalAlignment="Right">
+          <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{utu:Responsive Narrow=Collapsed, Normal=Visible, Layout={StaticResource DemoLayout}}">
             <Ellipse Width="5" Height="5" Fill="#FFA6B197" />
             <StackPanel x:Name="SpecLabel" Orientation="Horizontal" VerticalAlignment="Center" />
           </StackPanel>
@@ -143,7 +143,7 @@
                                              TransitionDuration="{x:Bind ViewModel.Duration, Mode=OneWay}"
                                              TransitionStrength="{x:Bind ViewModel.Strength, Mode=OneWay}"
                                              IsReducedMotionEnabled="{x:Bind ViewModel.IsReducedMotion, Mode=OneWay}"
-                                             IsAutoPlayEnabled="True"
+                                             DiagnosticCrossfade="{x:Bind ViewModel.IsDiagnosticCrossfade, Mode=OneWay}"
                                              AutoPlayInterval="0:0:5.5" />
 
             <Grid Margin="0,22,0,0" ColumnSpacing="15">
@@ -213,6 +213,15 @@
                   </StackPanel>
                 </StackPanel>
               </RadioButton>
+              <RadioButton x:Name="CrossfadeOption" Style="{StaticResource EffectOption}" GroupName="Effect" IsChecked="{x:Bind ViewModel.IsDiagnosticCrossfade, Mode=OneWay}" Checked="OnCrossfadeChecked" AutomationProperties.Name="Original crossfade (diagnostic)">
+                <StackPanel VerticalAlignment="Center">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Original crossfade" FontFamily="{StaticResource RolodexFontMedium}" FontSize="12" Foreground="{StaticResource DemoOptionInkBrushFixed}" />
+                    <TextBlock Text="diagnostic" FontFamily="{StaticResource RolodexFontRegular}" FontSize="8" Foreground="#FFA0AA94" VerticalAlignment="Center" />
+                  </StackPanel>
+                  <TextBlock Text="Plain dissolve for comparison only; never a production mode." Margin="0,4,0,0" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" LineHeight="15.5" Foreground="{StaticResource DemoOptionDescriptionBrushFixed}" TextWrapping="Wrap" />
+                </StackPanel>
+              </RadioButton>
             </StackPanel>
 
             <Grid Margin="0,23,0,0" ColumnSpacing="22">
@@ -272,7 +281,7 @@
           </StackPanel>
         </Grid>
 
-        <TextBlock Grid.Row="2" Text="UNO PLATFORM · SKIA RUNTIME EFFECT · MORPH BLEND AND LIQUID WARP" Padding="20,13,20,24" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoFooterBrushFixed}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
+        <TextBlock Grid.Row="2" Text="UNO PLATFORM · LIVING POSTCARD · SKIA RUNTIME EFFECT · MORPH BLEND AND LIQUID WARP" Padding="20,13,20,24" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoFooterBrushFixed}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
       </Grid>
     </ScrollViewer>
 

@@ -31,6 +31,9 @@ internal sealed class DebugHarness
     public bool Replay { get; private set; }
     public bool Empty { get; private set; }
     public bool Single { get; private set; }
+    /// <summary>Fractional picker position for position-driven captures (LP03), e.g. 0.5 = halfway from index 0 to 1.</summary>
+    public double? Position { get; private set; }
+    public bool Crossfade { get; private set; }
 
     public bool IsActive => ExportFixtures is not null || CapturePath is not null || PerfPath is not null || Steps > 0;
 
@@ -72,6 +75,8 @@ internal sealed class DebugHarness
                 case "replay": h.Replay = true; break;
                 case "empty": h.Empty = true; break;
                 case "single": h.Single = true; break;
+                case "position": h.Position = double.Parse(value, CultureInfo.InvariantCulture); break;
+                case "crossfade": h.Crossfade = true; break;
             }
         }
 
