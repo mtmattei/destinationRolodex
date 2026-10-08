@@ -128,43 +128,6 @@ public sealed partial class MainPage : Page
         }
     }
 
-    private async void OnOpenCredits(object sender, RoutedEventArgs e)
-    {
-        Card.Pause();
-        var list = new StackPanel();
-        var regular = (FontFamily)Application.Current.Resources["RolodexFontRegular"];
-        list.Children.Add(new TextBlock
-        {
-            Text = "Each country has its own packaged photograph (the six originals from the handoff manifest). Credits and source pages are preserved per photo.",
-            FontFamily = regular, FontSize = 12, LineHeight = 20, TextWrapping = TextWrapping.Wrap, Foreground = (Brush)Resources["DemoDialogBodyBrushFixed"],
-        });
-        foreach (var d in ViewModel.Destinations)
-        {
-            var row = new Grid { Padding = new Thickness(0, 13, 0, 13), BorderThickness = new Thickness(0, 1, 0, 0), BorderBrush = (Brush)Resources["DemoDialogLineBrushFixed"] };
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            row.Children.Add(new TextBlock { Text = d.Country, FontFamily = regular, FontSize = 12, Foreground = (Brush)Resources["DemoDialogInkBrushFixed"], VerticalAlignment = VerticalAlignment.Center });
-            var link = new HyperlinkButton { Content = new TextBlock { Text = $"{d.PhotoCredit} ↗", FontFamily = regular, FontSize = 11, Foreground = (Brush)Resources["DemoDialogLinkBrushFixed"] }, NavigateUri = d.PhotoSource, Padding = new Thickness(0), MinHeight = 32 };
-            Grid.SetColumn(link, 1);
-            row.Children.Add(link);
-            list.Children.Add(row);
-        }
-
-        list.Children.Add(new TextBlock
-        {
-            Text = "Look around adds a constrained pan, zoom and perspective to a flat photograph; it is not a 360° panorama. The morph is procedural texture displacement, not landmark tracking. Photo effects need a Skia surface with runtime SkSL; otherwise plain photos with a crossfade are shown and labelled as such.",
-            Margin = new Thickness(0, 15, 0, 0), FontFamily = regular, FontSize = 11, LineHeight = 18, TextWrapping = TextWrapping.Wrap, Foreground = (Brush)Resources["DemoDialogBodyBrushFixed"],
-        });
-        var dialog = new ContentDialog
-        {
-            Title = "Behind the destinations",
-            Content = new ScrollViewer { Content = list, MaxHeight = 520 },
-            CloseButtonText = "Close",
-            XamlRoot = XamlRoot,
-        };
-        await dialog.ShowAsync();
-    }
-
 #if DEBUG
     private async Task RunHarnessAsync(Harness.DebugHarness h)
     {

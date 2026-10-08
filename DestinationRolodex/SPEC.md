@@ -31,7 +31,7 @@ graphs the app actually runs as. When this file and a brief disagree, the brief 
 | Tour autoplay with progress ring | implemented | frame loop + dashed `Ellipse` stroke |
 | Loading / failure / retry | implemented | status pill + Retry; `--media-fail`/`--media-delay` prove it |
 | Reduced motion | implemented | DP + demo toggle; no OS hook on Skia desktop |
-| Photo credits dialog | implemented | `ContentDialog` listing credit + source link per destination |
+| Photo credits dialog | omitted (user request, 2026-10-08) | demo-page dialog and "About the photos" link removed; per-photo credit + source stay in `destinations.json` and the in-card Look credit link |
 | Blur on distant picker rows (≤ 1 px) | omitted | XAML has no cheap per-element blur on Skia; brief 03 allows the delta |
 | Text shadow under country rows | omitted | no XAML text shadow; the stable wash carries contrast |
 | Picker top/bottom fade mask | substituted | folded into per-row opacity near the 300 px window edge |
@@ -72,7 +72,6 @@ MainPage (demo)                                  DestinationDemoViewModel (MVVM)
 │  │  │  ├─ Look title · Photo credit link
 │  │  │  └─ Footer: hint | camera controls (Look mode via ViewMode only; no button)
 │  │  └─ Detail: pin location · REGION · description · dots(6) · prev/next
-│  ├─ Under card: instructions · "About the photos" → ContentDialog !
 │  └─ DestinationRolodexCard #2 (toggle; LiquidWarp, independent)
 └─ Motion lab (right / stacked ≤ 720)
    ├─ Effect radio ×2 ⇒ VM.TransitionKind → card

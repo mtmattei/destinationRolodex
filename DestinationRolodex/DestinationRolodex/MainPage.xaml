@@ -27,14 +27,9 @@
     <SolidColorBrush x:Key="DemoReplayInkBrushFixed" Color="#FFF3F6EC" />
     <SolidColorBrush x:Key="DemoStatusDotBrushFixed" Color="#FF93A57F" />
     <SolidColorBrush x:Key="DemoStatusFallbackBrushFixed" Color="#FFBC9867" />
-    <SolidColorBrush x:Key="DemoCreditLineBrushFixed" Color="#FFB4BDAE" />
     <SolidColorBrush x:Key="DemoSliderFillBrushFixed" Color="#FF7D9766" />
     <SolidColorBrush x:Key="DemoSliderTrackBrushFixed" Color="#FFDFE5D8" />
     <SolidColorBrush x:Key="DemoSliderThumbBrushFixed" Color="#FF6D8B54" />
-    <SolidColorBrush x:Key="DemoDialogInkBrushFixed" Color="#FF304235" />
-    <SolidColorBrush x:Key="DemoDialogBodyBrushFixed" Color="#FF75816F" />
-    <SolidColorBrush x:Key="DemoDialogLineBrushFixed" Color="#FFE3E9DD" />
-    <SolidColorBrush x:Key="DemoDialogLinkBrushFixed" Color="#FF76826E" />
 
     <Style x:Key="DemoSlider" TargetType="Slider" BasedOn="{StaticResource SimpleSliderStyle}">
       <Setter Property="Foreground" Value="{StaticResource DemoSliderFillBrushFixed}" />
@@ -106,7 +101,7 @@
             <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
 
-          <StackPanel x:Name="CardColumn" Grid.Row="0" MaxWidth="480" HorizontalAlignment="Stretch">
+          <StackPanel x:Name="CardColumn" Grid.Row="0" MaxWidth="480" HorizontalAlignment="Stretch" Margin="0,24,0,0">
             <controls:DestinationRolodexCard x:Name="Card"
                                              Destinations="{x:Bind ViewModel.Destinations, Mode=OneWay}"
                                              TransitionKind="{x:Bind ViewModel.TransitionKind, Mode=OneWay}"
@@ -115,21 +110,6 @@
                                              IsReducedMotionEnabled="{x:Bind ViewModel.IsReducedMotion, Mode=OneWay}"
                                              DiagnosticCrossfade="{x:Bind ViewModel.IsDiagnosticCrossfade, Mode=OneWay}"
                                              AutoPlayInterval="0:0:5.5" />
-
-            <Grid Margin="0,22,0,0" ColumnSpacing="15">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-              </Grid.ColumnDefinitions>
-              <TextBlock FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoMutedBrushFixed}" VerticalAlignment="Center" TextWrapping="Wrap">
-                <Run Text="Scroll, swipe, or press ↑ ↓" />
-              </TextBlock>
-              <Button Grid.Column="1" Style="{StaticResource RolodexBareButton}" Click="OnOpenCredits" Padding="0" MinHeight="44" AutomationProperties.Name="About the photos">
-                <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource DemoCreditLineBrushFixed}" Padding="0,1">
-                  <TextBlock Text="About the photos" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoMutedBrushFixed}" />
-                </Border>
-              </Button>
-            </Grid>
 
             <!-- Second, independent instance (demo toggle): Liquid Warp, no autoplay, same catalog. -->
             <controls:DestinationRolodexCard x:Name="SecondCard"
