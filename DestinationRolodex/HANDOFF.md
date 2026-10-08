@@ -1,53 +1,48 @@
-# HANDOFF — Destination Rolodex Uno build
-Updated: 2026-10-07 16:50
+# HANDOFF — Destination Rolodex Uno build (Living Postcard, revision 2)
+Updated: 2026-10-08 09:40
 
 ## Where we are
-The handoff kit (briefs 01–09, approved HTML) is rebuilt as an Uno Platform app in `DestinationRolodex/`: reusable
-`DestinationRolodexCard` (looping picker, SkSL Morph Blend / Liquid Warp on `SKCanvasElement`, parallax, Look around,
-tour, loading/failure/retry, reduced motion), MVVM demo page with the motion lab and a second independent card, DEBUG
-harness, fixture export, browser parity script, WebAssembly smoke, unit tests (39 green). Desktop and WebAssembly runtime
-verified; Android builds but its runtime is parked at the user's request. `docs/COMPLETENESS.md`: Complete with gaps.
+Revision 2 of the brief (`../briefs/destination-rolodex-uno-living-postcard-brief.md`) is implemented in
+`DestinationRolodex/`: one photograph behind an integrated serif caption with a warm 6 px rim; country rows drawn in the
+Skia scene (solid ink + photo-in-type); the morph/liquid effect, globe, material colors, caption treatment and arrival
+camera all read one `SceneFrame` from the picker position (no timed transition on selection); orthographic globe from a
+Natural Earth mask; spring 115/21 with 1/120 s substeps; tour starts paused; no idle drift; counter and in-photo badge
+removed; lab-only diagnostic crossfade. 58 unit tests green. Desktop evidence refreshed (`docs/evidence/captures`,
+revision 1 archived in `captures-r1`). The brief's visual authority (revision-05 HTML + source zip) was **not** in the kit;
+SPEC.md "Revision 2" lists the assumptions it would settle.
 
 ## Last verified state
-- Build: `net10.0-desktop` 0 warnings (Uno0001 as error); `net10.0-android` 0 warnings; `net10.0-browserwasm` 0 warnings (Debug).
-- Runtime: desktop via harness captures (`docs/evidence/captures`, all 16 states + perf + 1,000 steps), fixtures and browser
-  parity (`fixtures`, `browser-reference`, `recordings`); WebAssembly in headless Chromium (`docs/evidence/wasm`, desktop
-  viewport proven, 390×844 still loading at the smoke's wait). App MCP not used (session not rooted in the solution).
-- Git: master, last commit "feat: wasm head builds and runs; lint cleanup on demo page; viewport re-check in frame loop; completeness report".
-- Lint (xaml-semantic-lint, re-run after cleanup): CARD 8 · HEX 96 · CODEBEHIND 43 · RESPONSIVE 5 · TOKENTHEME 0 · ICON 0; every remaining hit sits under a `xaml-lint: allow` file header (design tokens over photography, custom-control implementation, container-width queries).
-- Note: the user's own desktop instance was left running at the end; the last desktop build went to `bin-verify/` (gitignored) so `bin/` stayed untouched. Rebuild `bin/` normally next session.
+- Build: `net10.0-desktop` Debug 0 warnings (Uno0001 as error). Android/WASM heads not rebuilt since revision 2 (built clean on revision 1).
+- Runtime: desktop through the harness (24-state matrix incl. `--position` 0.25/0.5/0.75/1.5, 320/390/768/1440 widths, loading, failed, no-shader, empty, single, two cards, reduced, 1,000 steps, 12 s perf: loop p50 15.6 ms / p95 16.6 ms / max 25.4 ms). Fixtures re-exported scrim-free; browser parity re-run. App MCP not used.
+- Git: master, last commit "feat: Living Postcard revision 2"; working tree clean after this handoff commit.
+- Lint: all hits under `xaml-lint: allow` file headers (tokens over photography, custom-control implementation, container-width queries, shadow element); re-run `xaml-semantic-lint.ps1` to refresh counts.
 
 ## Guidance applied
 | Skill / rule / decision | Applied at |
 |---|---|
-| skiasharp-uno: cache `SKRuntimeShaderBuilder`, one `Build()` per frame | `DestinationRolodex/Rendering/PhotoRenderer.cs` (`_builder`, `DrawWithEffect`) |
-| skiasharp-uno: `IsSupportedOnCurrentPlatform()` before construction + fallback | `Controls/DestinationRolodexCard.xaml.cs` `EnsureSurface` |
-| uno-runtime-gotchas: `CharacterSpacing` no-op → per-glyph layout | `Controls/GlyphLayout.cs` |
-| uno-runtime-gotchas: centered Grid collapses star columns → Stretch + MaxWidth | `MainPage.xaml` `LabLayout` |
-| uno-runtime-gotchas: `RenderTargetBitmap` is Uno0001 on WASM → `#if !__WASM__` | `Harness/CaptureHelper.cs` |
-| uno-scaffolding: `{utu:Responsive}` for window breakpoints | `MainPage.xaml` (`DemoLayout`, `MotionLab`) |
-| briefs 03/05: JS rounding, positive modulo, latest-target policy | `Models/CircularMath.cs`, `Rendering/TransitionCoordinator.cs` |
+| Brief §3 one shared state (`q`, `p`, pair, travel) | `Rendering/SceneFrame.cs`, `DestinationRolodexCard.PresentFrame` |
+| Brief §4 photo-in-type, material mixes, motion table | `Rendering/PhotoRenderer.DrawRows`, `Rendering/SceneFrame.cs` (`MaterialColors`), `Input/CountryPickerController.cs` (115/21, substeps) |
+| Brief §5 globe (slerp, antipodal, missing coords) | `Rendering/GlobeRenderer.cs`, `GlobeTests.cs`, `Assets/Globe/` |
+| skiasharp-uno: cache builder/blobs, one Build() per frame | `Rendering/PhotoRenderer.cs` |
+| uno-runtime-gotchas: Responsive is window-based; RenderTargetBitmap WASM Uno0001; zero-height Path | `App.xaml.cs` (harness resize), `Harness/CaptureHelper.cs`, `Styles/DestinationRolodexResources.xaml` |
 | uno-completeness-audit | `docs/COMPLETENESS.md` |
 Read, not applied: uno-break-it, gold-standard-pass, uno-audit.
 
 ## Next actions (in order)
-1. Rooted session (`~/.claude/scripts/Open-RootedSession.ps1 -Path DestinationRolodex`) → `uno-verify` with the App MCP for live wheel/drag/keyboard evidence (A07, A08, A23); promote those rows to R in `docs/evidence/ACCEPTANCE.md` and `docs/COMPLETENESS.md`.
-2. `python -I tools/wasm_smoke.py` after a Release wasm build for the 390×844 capture; drive Look around and a media failure in the browser.
-3. Decide the SPEC.md substitutions (row blur, text shadow, mask fold, kerning) and verify the Norway/Iceland source pages.
-4. Optional: `uno-break-it`, `gold-standard-pass`, `uno-audit` passes at feature-complete.
+1. Drop `reference/destination-rolodex-living-postcard.html` + `destination-rolodex-living-postcard-source.zip` into the kit, then compare scrim/highlight/shadow/caption-ink against revision 05 and run `tools/browser_reference.py` against the new HTML (adapt the route keys if the photo URLs changed).
+2. Rebuild and smoke `net10.0-browserwasm` (`tools/wasm_smoke.py`) for revision 2; rebuild `net10.0-android` (runtime parked by the user).
+3. Rooted session + `uno-verify` (App MCP) for live wheel/drag/keys/dots and the analytic row hit test (LP09, LP15).
+4. Decide the remaining assumptions in SPEC.md (serif choice, "caption ink" placement) with Matt.
 
 ## Open questions
-- Android runtime dropped by the user for now; head still compiles.
-- WinAppSDK / iOS / macOS heads not scaffolded (SPEC.md).
-- Release-configuration performance not measured.
-- Harness captures use `RenderTargetBitmap`; the first desktop capture after a window resize can still race the resize (the card now re-checks `XamlRoot.Size` from its loop).
+- Serif: Source Serif 4 stands in for Georgia (not on every head).
+- Where revision 05 applies the dark "caption ink" mix (currently only the shadow tint uses it).
+- High-DPI, screen reader, high contrast not run.
 
 ## Relaunch
 ```powershell
 cd C:\Users\Platform006\UnoProjects\destination-rolodex\DestinationRolodex
 dotnet build DestinationRolodex/DestinationRolodex.csproj -f net10.0-desktop -c Debug
 dotnet run --project DestinationRolodex/DestinationRolodex.csproj -f net10.0-desktop --no-build
-bash tools/capture-matrix.sh            # evidence refresh (does not kill other instances)
-python -I tools/browser_reference.py    # parity vs the approved HTML
+bash tools/capture-matrix.sh            # evidence refresh (never kills other instances)
 ```
-Plain exe launches need a harness switch (e.g. `--capture=...`) or the devserver, because `UseStudio()` runs in Debug.
