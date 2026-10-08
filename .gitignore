@@ -5,3 +5,5 @@ obj/
 /destination-rolodex
 *.part
 bin-verify/
+
+bin-verify*/
