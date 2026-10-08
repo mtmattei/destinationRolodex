@@ -9,7 +9,6 @@
   <!-- xaml-lint: allow card - the motion-lab panels copy the prototype's demo chrome; CardContentControl adds interaction overlays the design does not have. -->
   <Page.Resources>
     <utu:ResponsiveLayout x:Key="DemoLayout" Narrowest="150" Narrow="300" Normal="600" Wide="721" Widest="1100" />
-    <SolidColorBrush x:Key="DemoHeaderLineBrushFixed" Color="#FFE4E9DF" />
     <!-- Two muted tiers, sage hue kept, lightness set for AA on the slate page: Muted 5.5:1, Faint 4.5:1 -->
     <SolidColorBrush x:Key="DemoMutedBrushFixed" Color="#FF535E4D" />
     <SolidColorBrush x:Key="DemoFaintBrushFixed" Color="#FF646B5E" />
@@ -100,18 +99,6 @@
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <Grid Height="{utu:Responsive Narrow=70, Wide=88, Layout={StaticResource DemoLayout}}" MaxWidth="1120" Margin="{utu:Responsive Narrow='20,0', Wide='36,0', Layout={StaticResource DemoLayout}}" BorderBrush="{StaticResource DemoHeaderLineBrushFixed}" BorderThickness="0,0,0,1">
-          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" HorizontalAlignment="Left">
-            <Viewbox Width="24" Height="24"><Path Style="{StaticResource RolodexIconGlobe}" Stroke="{StaticResource DemoBrandIconBrushFixed}" StrokeThickness="1.1" /></Viewbox>
-            <TextBlock Text="Destination Rolodex" FontFamily="{StaticResource RolodexFontSemiBold}" FontSize="13" Foreground="{StaticResource RolodexPageInkBrushFixed}" VerticalAlignment="Center" />
-          </StackPanel>
-          <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="{utu:Responsive Narrow=Collapsed, Normal=Visible, Layout={StaticResource DemoLayout}}">
-            <Ellipse Width="5" Height="5" Fill="#FFA6B197" />
-            <StackPanel x:Name="SpecLabel" Orientation="Horizontal" VerticalAlignment="Center" />
-          </StackPanel>
-        </Grid>
-
         <!-- Main: card column + motion lab -->
         <Grid x:Name="LabLayout" Grid.Row="1" MaxWidth="838" Margin="{utu:Responsive Narrow='17,24,17,19', Wide='24,30,24,24', Layout={StaticResource DemoLayout}}" ColumnSpacing="{utu:Responsive Narrow=0, Wide=54, Layout={StaticResource DemoLayout}}" RowSpacing="{utu:Responsive Narrow=31, Wide=0, Layout={StaticResource DemoLayout}}" HorizontalAlignment="Stretch">
           <Grid.ColumnDefinitions>
@@ -124,11 +111,6 @@
           </Grid.RowDefinitions>
 
           <StackPanel x:Name="CardColumn" Grid.Row="0" Grid.Column="0" MaxWidth="480" HorizontalAlignment="Stretch">
-            <Grid Margin="0,0,0,19">
-              <TextBlock Text="Where to next?" FontFamily="{StaticResource RolodexFontMedium}" FontSize="{utu:Responsive Narrow=27, Wide=29, Layout={StaticResource DemoLayout}}" Foreground="{StaticResource RolodexPageInkBrushFixed}" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-              <TextBlock Text="{x:Bind ViewModel.CountText, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoMutedBrushFixed}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,0,4" />
-            </Grid>
-
             <controls:DestinationRolodexCard x:Name="Card"
                                              Destinations="{x:Bind ViewModel.Destinations, Mode=OneWay}"
                                              TransitionKind="{x:Bind ViewModel.TransitionKind, Mode=OneWay}"
@@ -167,11 +149,10 @@
           <StackPanel x:Name="MotionLab" Width="{utu:Responsive Narrow=NaN, Wide=304, Layout={StaticResource DemoLayout}}" MaxWidth="480"
                       Grid.Row="{utu:Responsive Narrow=1, Wide=0, Layout={StaticResource DemoLayout}}"
                       Grid.Column="{utu:Responsive Narrow=0, Wide=1, Layout={StaticResource DemoLayout}}"
-                      Padding="{utu:Responsive Narrow='0,25,0,5', Wide='0,57,0,0', Layout={StaticResource DemoLayout}}"
+                      Padding="{utu:Responsive Narrow='0,25,0,5', Wide='0,2,0,0', Layout={StaticResource DemoLayout}}"
                       BorderThickness="{utu:Responsive Narrow='0,1,0,0', Wide=0, Layout={StaticResource DemoLayout}}" BorderBrush="{StaticResource DemoDividerBrushFixed}">
             <Grid>
               <StackPanel HorizontalAlignment="Left">
-                <StackPanel x:Name="LabKicker" Orientation="Horizontal" Margin="0,0,0,10" />
                 <TextBlock Text="Morph + liquid" FontFamily="{StaticResource RolodexFontMedium}" FontSize="20" Foreground="{StaticResource RolodexPageInkBrushFixed}" />
               </StackPanel>
               <Border Width="32" Height="32" CornerRadius="8" BorderThickness="1" BorderBrush="#FFDCE4D5" HorizontalAlignment="Right" VerticalAlignment="Center">
