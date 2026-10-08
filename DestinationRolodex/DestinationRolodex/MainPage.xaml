@@ -100,17 +100,13 @@
         </Grid.RowDefinitions>
 
         <!-- Main: card column + motion lab -->
-        <Grid x:Name="LabLayout" Grid.Row="1" MaxWidth="838" Margin="{utu:Responsive Narrow='17,24,17,19', Wide='24,30,24,24', Layout={StaticResource DemoLayout}}" ColumnSpacing="{utu:Responsive Narrow=0, Wide=54, Layout={StaticResource DemoLayout}}" RowSpacing="{utu:Responsive Narrow=31, Wide=0, Layout={StaticResource DemoLayout}}" HorizontalAlignment="Stretch">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-          </Grid.ColumnDefinitions>
+        <Grid x:Name="LabLayout" Grid.Row="1" MaxWidth="838" Margin="{utu:Responsive Narrow='17,24,17,19', Wide='24,30,24,24', Layout={StaticResource DemoLayout}}" RowSpacing="31" HorizontalAlignment="Stretch">
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
 
-          <StackPanel x:Name="CardColumn" Grid.Row="0" Grid.Column="0" MaxWidth="480" HorizontalAlignment="Stretch">
+          <StackPanel x:Name="CardColumn" Grid.Row="0" MaxWidth="480" HorizontalAlignment="Stretch">
             <controls:DestinationRolodexCard x:Name="Card"
                                              Destinations="{x:Bind ViewModel.Destinations, Mode=OneWay}"
                                              TransitionKind="{x:Bind ViewModel.TransitionKind, Mode=OneWay}"
@@ -145,12 +141,20 @@
                                              SelectedIndex="3" />
           </StackPanel>
 
-          <!-- Motion lab -->
-          <StackPanel x:Name="MotionLab" Width="{utu:Responsive Narrow=NaN, Wide=304, Layout={StaticResource DemoLayout}}" MaxWidth="480"
-                      Grid.Row="{utu:Responsive Narrow=1, Wide=0, Layout={StaticResource DemoLayout}}"
-                      Grid.Column="{utu:Responsive Narrow=0, Wide=1, Layout={StaticResource DemoLayout}}"
-                      Padding="{utu:Responsive Narrow='0,25,0,5', Wide='0,2,0,0', Layout={StaticResource DemoLayout}}"
-                      BorderThickness="{utu:Responsive Narrow='0,1,0,0', Wide=0, Layout={StaticResource DemoLayout}}" BorderBrush="{StaticResource DemoDividerBrushFixed}">
+          <!-- Motion lab: two columns below the card (options | controls), one column on narrow hosts -->
+          <Grid x:Name="MotionLab" Grid.Row="1" Padding="0,25,0,5" BorderThickness="0,1,0,0" BorderBrush="{StaticResource DemoDividerBrushFixed}"
+                ColumnSpacing="{utu:Responsive Narrow=0, Wide=54, Layout={StaticResource DemoLayout}}"
+                RowSpacing="{utu:Responsive Narrow=28, Wide=0, Layout={StaticResource DemoLayout}}">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="{utu:Responsive Narrow=0, Wide='*', Layout={StaticResource DemoLayout}}" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel x:Name="LabOptions" Grid.Row="0" Grid.Column="0" MaxWidth="480" HorizontalAlignment="Stretch">
             <Grid>
               <StackPanel HorizontalAlignment="Left">
                 <TextBlock Text="Morph + liquid" FontFamily="{StaticResource RolodexFontMedium}" FontSize="20" Foreground="{StaticResource RolodexPageInkBrushFixed}" />
@@ -205,7 +209,17 @@
               </RadioButton>
             </StackPanel>
 
-            <Grid Margin="0,23,0,0" ColumnSpacing="22">
+            <!-- Demo-only toggles: not part of the reusable card. -->
+            <StackPanel Margin="0,22,0,0" Padding="0,16,0,0" BorderThickness="0,1,0,0" BorderBrush="{StaticResource DemoDividerBrushFixed}" Spacing="6">
+              <ToggleSwitch Header="Reduce motion" IsOn="{x:Bind ViewModel.IsReducedMotion, Mode=TwoWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoMutedBrushFixed}" />
+              <ToggleSwitch Header="Second card (Liquid Warp, independent)" IsOn="{x:Bind ViewModel.ShowSecondCard, Mode=TwoWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoMutedBrushFixed}" />
+            </StackPanel>
+            </StackPanel>
+
+            <StackPanel x:Name="LabControls" MaxWidth="480" HorizontalAlignment="Stretch"
+                        Grid.Row="{utu:Responsive Narrow=1, Wide=0, Layout={StaticResource DemoLayout}}"
+                        Grid.Column="{utu:Responsive Narrow=0, Wide=1, Layout={StaticResource DemoLayout}}">
+            <Grid Margin="0,6,0,0" ColumnSpacing="22">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -253,13 +267,8 @@
               <TextBlock Text="{x:Bind ViewModel.RendererStatus, Mode=OneWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="8" Foreground="{StaticResource DemoMutedBrushFixed}" VerticalAlignment="Center" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
             </StackPanel>
             <TextBlock Text="Scroll the card to browse. Switch effects to replay the same pair, or drag the timeline to inspect a frame." Margin="0,7,0,0" MaxWidth="295" HorizontalAlignment="Left" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" LineHeight="15.3" Foreground="{StaticResource DemoMutedBrushFixed}" TextWrapping="Wrap" />
-
-            <!-- Demo-only toggles: not part of the reusable card. -->
-            <StackPanel Margin="0,22,0,0" Padding="0,16,0,0" BorderThickness="0,1,0,0" BorderBrush="{StaticResource DemoDividerBrushFixed}" Spacing="6">
-              <ToggleSwitch Header="Reduce motion" IsOn="{x:Bind ViewModel.IsReducedMotion, Mode=TwoWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoMutedBrushFixed}" />
-              <ToggleSwitch Header="Second card (Liquid Warp, independent)" IsOn="{x:Bind ViewModel.ShowSecondCard, Mode=TwoWay}" FontFamily="{StaticResource RolodexFontRegular}" FontSize="10" Foreground="{StaticResource DemoMutedBrushFixed}" />
             </StackPanel>
-          </StackPanel>
+          </Grid>
         </Grid>
 
         <TextBlock Grid.Row="2" Text="UNO PLATFORM · LIVING POSTCARD · SKIA RUNTIME EFFECT · MORPH BLEND AND LIQUID WARP" Padding="20,13,20,24" FontFamily="{StaticResource RolodexFontRegular}" FontSize="9" Foreground="{StaticResource DemoFaintBrushFixed}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
