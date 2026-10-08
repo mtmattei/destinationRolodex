@@ -59,8 +59,8 @@ public sealed partial class MainPage : Page
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         var semi = (FontFamily)Application.Current.Resources["RolodexFontSemiBold"];
-        GlyphLayout.Apply(SpecLabel, "LIVE TRANSITIONS", semi, 9, 1.6, (Brush)Resources["DemoSpecBrushFixed"]);
-        GlyphLayout.Apply(LabKicker, "APPROVED MOTION", semi, 8, 1.8, (Brush)Resources["DemoKickerBrushFixed"]);
+        GlyphLayout.Apply(SpecLabel, "LIVE TRANSITIONS", semi, 9, 1.6, (Brush)Resources["DemoMutedBrushFixed"]);
+        GlyphLayout.Apply(LabKicker, "APPROVED MOTION", semi, 8, 1.8, (Brush)Resources["DemoMutedBrushFixed"]);
 
         var catalog = await DestinationRepository.LoadPackagedAsync();
 #if DEBUG

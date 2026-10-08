@@ -44,6 +44,7 @@ public sealed partial class DestinationRolodexCard : UserControl
     private readonly Tween _hoverLift = new(0);
     private readonly Tween _pointerLight = new(0);
     private readonly List<Button> _dots = new();
+    private double _dotWidth = 30;
     private readonly List<Border> _dotBars = new();
     private readonly List<double> _frameIntervals = new();
     private readonly SolidColorBrush _accentBrush = new(Windows.UI.Color.FromArgb(255, 0xFF, 0xF7, 0xE0));
@@ -506,7 +507,7 @@ public sealed partial class DestinationRolodexCard : UserControl
         {
             var index = i;
             var bar = new Border { Width = 4, Height = 4, CornerRadius = new CornerRadius(2), Background = inactive, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-            var button = new Button { Style = (Style)Application.Current.Resources["RolodexBareButton"], Width = 30, Height = 44, MinWidth = 30, Content = bar };
+            var button = new Button { Style = (Style)Application.Current.Resources["RolodexBareButton"], Width = _dotWidth, Height = 44, MinWidth = 0, Content = bar };
             AutomationProperties.SetName(button, $"Show {_data[i].Country}");
             ToolTipService.SetToolTip(button, _data[i].Country);
             button.Click += (_, _) => GoTo(index);
@@ -586,6 +587,18 @@ public sealed partial class DestinationRolodexCard : UserControl
         MediaStatusPill.Margin = new Thickness(compact ? 18 : 22, compact ? 60 : 66, 22, 0);
         GlyphLayout.Apply(Eyebrow, "DESTINATIONS", _fontSemiBold!, compact ? 9 : 10, compact ? 1.5 : 2.2, _sceneInk!);
 
+        // Pagination must show every destination: below 340 the six 30 px targets no longer fit beside the arrows.
+        var dotWidth = cardWidth > 0 && cardWidth < 300 ? 21 : 30;
+        if (Math.Abs(dotWidth - _dotWidth) > .5)
+        {
+            _dotWidth = dotWidth;
+            Pagination.Spacing = dotWidth < 30 ? 1 : 2;
+            foreach (var dot in _dots)
+            {
+                dot.Width = dotWidth;
+            }
+        }
+
         // Picker centered in the browsing area above the caption and footer.
         var browsingBottom = sceneHeight - captionHeight - footerHeight - 16;
         _pickerCenterY = Math.Max(120, browsingBottom / 2 + 12);
@@ -612,8 +625,6 @@ public sealed partial class DestinationRolodexCard : UserControl
         var text = coarse ? "SWIPE TO EXPLORE" : "SCROLL TO EXPLORE";
         var compact = Root.ActualWidth > 0 && Root.ActualWidth <= 360;
         GlyphLayout.Apply(HintText, text, _fontMedium!, compact ? 8 : 9, compact ? .8 : 1.3, _sceneInk!);
-        // Below ~340 the hint text and the Look around button would overlap; keep the glyph, drop the words (reflow, never overlap).
-        HintText.Visibility = Root.ActualWidth > 0 && Root.ActualWidth < 340 ? Visibility.Collapsed : Visibility.Visible;
     }
 
     #endregion
@@ -1514,16 +1525,38 @@ public sealed partial class DestinationRolodexCard : UserControl
             direction = 1;
             if (from is null || to is null)
             {
-                // One endpoint not ready: show whichever is ready, static; the next frame after decode draws the current fraction.
-                var fromReady = from is not null;
-                var ready = from ?? to;
+                // One endpoint not ready: hold the selected destination's own photo, static, or the neutral backdrop when that
+                // photo is the missing one. A neighbor's photograph never stands in under this caption (brief §9).
+                var selectedIsFrom = scene.Selected == scene.FromIndex;
+                var ready = selectedIsFrom ? from : to;
                 from = to = ready;
-                focalA = focalB = fromReady ? dFrom.FocalPoint : dTo.FocalPoint;
+                focalA = focalB = selectedIsFrom ? dFrom.FocalPoint : dTo.FocalPoint;
                 progress = 0;
-                if (ready is null && MediaStatus != DestinationMediaStatus.Failed && MediaStatus != DestinationMediaStatus.Loading)
+                var selectedId = _data[scene.Selected].Id;
+                if (ready is null && _failedIds.Contains(selectedId))
                 {
-                    MediaStatus = DestinationMediaStatus.Loading;
-                    _statusDue ??= DateTime.UtcNow.AddMilliseconds(1100);
+                    // Arrived on a destination whose photo already failed while it was a neighbor: say so, offer Retry.
+                    if (MediaStatus != DestinationMediaStatus.Failed)
+                    {
+                        MediaStatus = DestinationMediaStatus.Failed;
+                        _statusDue = null;
+                        SetStatus("Photo unavailable · check connection", retry: true);
+                    }
+                }
+                else if (ready is null)
+                {
+                    if (MediaStatus != DestinationMediaStatus.Loading)
+                    {
+                        MediaStatus = DestinationMediaStatus.Loading;
+                        _statusDue ??= DateTime.UtcNow.AddMilliseconds(1100);
+                    }
+                }
+                else if (MediaStatus != DestinationMediaStatus.Ready)
+                {
+                    // The selected photo is on screen; a still-loading or failed neighbor is not this card's status.
+                    MediaStatus = DestinationMediaStatus.Ready;
+                    _statusDue = null;
+                    SetStatus(null, retry: false);
                 }
             }
             else if (MediaStatus != DestinationMediaStatus.Ready && !_failedIds.Contains(_data[scene.Selected].Id))
